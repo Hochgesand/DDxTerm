@@ -50,9 +50,9 @@ void Terminal_hook::dropTerminal()
 			terminal_pos.bottom - terminal_pos.top,
 			NULL);
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		
-		count += 0.02;
+		count += 0.05;
 	}
 	
 	isOpen = TRUE;
@@ -69,17 +69,17 @@ void Terminal_hook::hideTerminal()
 	SetWindowPos(terminal_.get_hwnd(),
 		HWND_TOPMOST,
 		terminal_pos.left,
-		-30,
+		terminal_pos.top,
 		terminal_pos.right - terminal_pos.left,
 		terminal_pos.bottom - terminal_pos.top,
 		NULL);
 	
 	getTerminalPosition();
 	long oldPositionY = terminal_pos.top;
-	double y = terminal_pos.top;
+	double y = oldPositionY;
 	double count = 0.0;
 	const long rectHeight = calcRectHeight();
-	const double diff = (rectHeight - 30) * 1;
+	const double diff = rectHeight + oldPositionY;
 
 
 	while (y > rectHeight * -1 + 1)
@@ -87,7 +87,7 @@ void Terminal_hook::hideTerminal()
 		getTerminalPosition();
 		double calcDropReturn = calcdrop(count, -10);
 		y = calcDropReturn * diff - rectHeight;
-
+	
 		SetWindowPos(terminal_.get_hwnd(),
 			HWND_TOPMOST,
 			terminal_pos.left,
@@ -96,10 +96,18 @@ void Terminal_hook::hideTerminal()
 			terminal_pos.bottom - terminal_pos.top,
 			NULL);
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
-		count += 0.02;
+		count += 0.05;
 	}
+
+	SetWindowPos(terminal_.get_hwnd(),
+		HWND_BOTTOM,
+		terminal_pos.left,
+		terminal_pos.top,
+		terminal_pos.right - terminal_pos.left,
+		terminal_pos.bottom - terminal_pos.top,
+		NULL);
 
 	isOpen = FALSE;
 }
