@@ -16,7 +16,7 @@ int main()
 	    if (element.get_app_name() == "MobaXterm")
 	    {
             terminal_hook = std::make_unique<Terminal_hook>(element.get_hwnd(), element.get_app_name());
-            register_hotkey_with_method(0x42, []{ terminal_hook->toggle_terminal(); });
+            registerHotkeyWithMethod(0x42, []{ terminal_hook->toggleTerminal(); });
 	    }
     }
     return 0;

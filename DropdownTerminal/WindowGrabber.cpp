@@ -3,7 +3,7 @@
 
 std::vector<Window> open_windows;
 BOOL CALLBACK enumWindowCallback(HWND hWnd, LPARAM lparam) {
-    int length = GetWindowTextLength(hWnd);
+	const int length = GetWindowTextLength(hWnd);
     TCHAR* buffer = new TCHAR[length + 1];
     GetWindowText(hWnd, buffer, length + 1);
 
@@ -15,7 +15,7 @@ BOOL CALLBACK enumWindowCallback(HWND hWnd, LPARAM lparam) {
     return TRUE;
 }
 
-std::vector<Window> WindowGrabber::getOpenWindowsApplicationen() {
+std::vector<Window> WindowGrabber::get_open_windows_applications() {
     open_windows = {};
     EnumWindows(enumWindowCallback, NULL);
     return open_windows;

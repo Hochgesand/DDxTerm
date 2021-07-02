@@ -9,6 +9,6 @@
 class WindowGrabber
 {
 public:
-	std::vector<Window> getOpenWindowsApplicationen();
+	static std::vector<Window> get_open_windows_applications();
 };
 

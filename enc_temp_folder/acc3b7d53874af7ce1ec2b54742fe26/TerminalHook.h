@@ -7,16 +7,16 @@ void toggleTerminal();
 class Terminal_hook
 {
 protected:
-	void drop_terminal();
-	void hide_terminal();
+	void dropTerminal();
+	void hideTerminal();
 	BOOL isOpen;
-	double calc_drop(const double x, const double k) const;
-	long calc_rect_height();
+	double calcdrop(const double x, const double k) const;
+	long calcRectHeight();
 public:
 	Terminal_hook();
 	Terminal_hook(HWND, std::string);
-	RECT terminal_pos_;
+	RECT terminal_pos;
 	Window terminal_;
-	void toggle_terminal();
-	void get_terminal_position();
+	void toggleTerminal();
+	void getTerminalPosition();
 };
