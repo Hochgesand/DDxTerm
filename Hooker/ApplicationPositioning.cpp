@@ -105,7 +105,7 @@ void ApplicationPositioning::unfocus_application()
 {
 	application_hook_->refresh_terminal_position();
 	SetWindowPos(application_hook_->getApplicationInformation()->get_hwnd(),
-		HWND_BOTTOM,
+		HWND_NOTOPMOST,
 		application_hook_->getApplicationRect()->left,
 		application_hook_->getApplicationRect()->top,
 		application_hook_->getApplicationRect()->right - application_hook_->getApplicationRect()->left,

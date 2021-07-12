@@ -7,8 +7,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DropdownTerminal", "Dropdow
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Hooker", "Hooker\Hooker.vcxproj", "{C1AB67C1-F5F0-4A6A-9756-AB720DB1D344}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DropdownFrontend", "DropdownFrontend\DropdownFrontend.vcxproj", "{B423FBC9-6377-41CF-BCA8-B88A6F29E62A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -23,10 +21,6 @@ Global
 		{C1AB67C1-F5F0-4A6A-9756-AB720DB1D344}.Debug|x86.Build.0 = Debug|Win32
 		{C1AB67C1-F5F0-4A6A-9756-AB720DB1D344}.Release|x86.ActiveCfg = Release|Win32
 		{C1AB67C1-F5F0-4A6A-9756-AB720DB1D344}.Release|x86.Build.0 = Release|Win32
-		{B423FBC9-6377-41CF-BCA8-B88A6F29E62A}.Debug|x86.ActiveCfg = Debug|Win32
-		{B423FBC9-6377-41CF-BCA8-B88A6F29E62A}.Debug|x86.Build.0 = Debug|Win32
-		{B423FBC9-6377-41CF-BCA8-B88A6F29E62A}.Release|x86.ActiveCfg = Release|Win32
-		{B423FBC9-6377-41CF-BCA8-B88A6F29E62A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

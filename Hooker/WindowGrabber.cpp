@@ -14,7 +14,7 @@ BOOL CALLBACK enumWindowCallback(HWND hWnd, LPARAM lparam) {
 
     // List visible windows with a non-empty title
     if (IsWindowVisible(hWnd) && length != 0) {
-        const std::unique_ptr<HookedWindow> foundWindow(new HookedWindow(hWnd, buffer));
+        const std::unique_ptr<HookedWindow> foundWindow = std::make_unique<HookedWindow>(HookedWindow(hWnd, buffer));
         open_windows.insert({ foundWindow->get_hwnd(), foundWindow->get_app_name() });
     }
     free(buffer);

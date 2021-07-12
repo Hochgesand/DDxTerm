@@ -7,7 +7,7 @@
 class __declspec(dllexport) ApplicationPositioning
 {
 private:
-	BOOL isOpen{};
+	BOOL isOpen{true};
 	const unsigned int animation_speed{ 1 };
 	void drop_terminal();
 	void hide_terminal();
@@ -20,5 +20,9 @@ public:
 	void mov_app_to_pos_no_resize_in_focus(const long x, const long y);
 	void unfocus_application();
 	std::future<void> hotkey_handle;
+	Application_Hook* get_application_hook()
+	{
+		return application_hook_.get();
+	}
 };
 
