@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void register_hotkey_with_method(UINT button, const std::function<void()> function_on_hotkey)
+void register_hotkey_with_method(UINT button, const std::function<void()> function_on_hotkey, bool* running)
 {
 	if (RegisterHotKey(
 		nullptr,
@@ -16,15 +16,20 @@ void register_hotkey_with_method(UINT button, const std::function<void()> functi
 
 	MSG msg;
 
-	while (GetMessage(&msg, nullptr, 0u, 0u) != 0)
+	while (true)
 	{
-		if (msg.message == WM_HOTKEY)
+		if (PeekMessage(&msg, nullptr, 0u, 0u, PM_REMOVE) != 0)
 		{
-			function_on_hotkey();
+			if (msg.message == WM_HOTKEY)
+			{
+				function_on_hotkey();
+			}
 		}
+		if (!(*running))
+		{
+			break;
+		}
+		Sleep(50);
 	}
-}
-
-void check_if_window_moved(HWND hwnd, std::function<void()> function_to_exec)
-{
+	UnregisterHotKey(nullptr, 1);
 }
