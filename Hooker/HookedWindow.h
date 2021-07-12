@@ -1,15 +1,16 @@
 #pragma once
+
 #include <Windows.h>
 #include <string>
 
-class Window
+class __declspec(dllexport) HookedWindow
 {
-	HWND hwnd_;
+	HWND hwnd_{};
 	std::string app_name_;
 
 public:
-	Window() {}
-	Window(HWND hwnd, std::string app_name)
+	HookedWindow(){};
+	HookedWindow(HWND hwnd, std::string app_name)
 	{
 		hwnd_ = hwnd;
 		app_name_ = app_name;
