@@ -4,7 +4,6 @@ DDxTerm
 A Quakestyle DropdownTerminal for Windows.
 ------
 
-AFAIK this is the only quakestyle terminal in existance for Windows.
 I wanted such a terminal for Windows so I made one.
 It basically just hooks a window which you can select and moves it up and down, in this stage this is more just a proof of concept.
 

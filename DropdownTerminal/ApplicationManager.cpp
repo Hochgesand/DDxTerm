@@ -7,10 +7,10 @@
 
 ApplicationManager::ApplicationManager()
 {
-	refresh_running_apps();
+	refreshRunningApps();
 }
 
-void ApplicationManager::refresh_running_apps()
+void ApplicationManager::refreshRunningApps()
 {
     openApplications = WindowGrabber::get_open_windows_applications();
 }
@@ -35,12 +35,12 @@ void ApplicationManager::select_application_for_dd(std::string app_name)
     }
 }
 
-std::map<HWND, std::string> ApplicationManager::get_open_apps()
+std::map<HWND, std::string> ApplicationManager::getOpenApps()
 {
     return std::map<HWND, std::string>(openApplications);
 }
 
-void ApplicationManager::deselect_term()
+void ApplicationManager::deselectTerm()
 {
     terminator = false;
     if (selectedApplication != nullptr)
