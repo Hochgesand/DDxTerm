@@ -7,6 +7,6 @@
 class __declspec(dllexport) WindowGrabber
 {
 public:
-	static std::map<HWND, std::string> get_open_windows_applications();
+	static std::map<HWND, std::string> getOpenWindowsApplications();
 };
 

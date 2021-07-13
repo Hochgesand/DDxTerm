@@ -9,7 +9,7 @@ ApplicationPositioning::ApplicationPositioning(Application_Hook application_hook
 	application_hook_ = (std::make_unique<Application_Hook>(application_hook));
 }
 
-double ApplicationPositioning::calc_drop(const double x, const double k)
+double ApplicationPositioning::calcDrop(const double x, const double k)
 {
 	// https://en.wikipedia.org/wiki/Logistic_function
 	// If x0 == 0.5 and k == 10 the function will return values between 0 and 1 as double
@@ -18,9 +18,9 @@ double ApplicationPositioning::calc_drop(const double x, const double k)
 	return (1 / (1 + exp(-k * (x - x0))));
 }
 
-void ApplicationPositioning::drop_terminal()
+void ApplicationPositioning::dropTerminal()
 {
-	application_hook_->refresh_terminal_position();
+	application_hook_->refreshTerminalPosition();
 	const long oldPositionY = application_hook_->getApplicationRect()->top;
 	// oldPosition is equal to y in the beginning. OldPos is used for (m * x + b) calculation in the start of the while loop.
 	double y = application_hook_->getApplicationRect()->top;
@@ -30,9 +30,9 @@ void ApplicationPositioning::drop_terminal()
 	while (y < -31.0)
 	{
 		// Essentially m * x + b where b is the old Position where the animation started and the diff is the way to go to drop the Application and x is count.
-		y = calc_drop(count, 10) * diff + oldPositionY;
+		y = calcDrop(count, 10) * diff + oldPositionY;
 
-		mov_app_to_pos_no_resize_in_focus(application_hook_->getApplicationRect()->left, static_cast<long>(y));
+		movAppToPosNoResize(application_hook_->getApplicationRect()->left, static_cast<long>(y));
 
 		// Wait a bit or the animation is too fast
 		Sleep(animation_speed);
@@ -41,16 +41,16 @@ void ApplicationPositioning::drop_terminal()
 		count += 0.05;
 	}
 	// Grabs focus so you can type INSTANTLY
-	SetFocus(application_hook_->getApplicationInformation()->get_hwnd());
+	SetFocus(application_hook_->getApplicationInformation()->getHwnd());
 	// Maybe there is a more elegant solution. If so, make a PR :)
 	isOpen = TRUE;
 }
 
 // Sets WindowPosition to coordinates in params
-void ApplicationPositioning::mov_app_to_pos_no_resize_in_focus(const long x, const long y)
+void ApplicationPositioning::movAppToPosNoResize(const long x, const long y)
 {
-	application_hook_->refresh_terminal_position();
-	SetWindowPos(application_hook_->getApplicationInformation()->get_hwnd(),
+	application_hook_->refreshTerminalPosition();
+	SetWindowPos(application_hook_->getApplicationInformation()->getHwnd(),
 		HWND_TOPMOST,
 		x,
 		y,
@@ -58,24 +58,24 @@ void ApplicationPositioning::mov_app_to_pos_no_resize_in_focus(const long x, con
 		application_hook_->getApplicationRect()->bottom - application_hook_->getApplicationRect()->top,
 		NULL);
 
-	application_hook_->refresh_terminal_position();
+	application_hook_->refreshTerminalPosition();
 }
 
-void ApplicationPositioning::hide_terminal()
+void ApplicationPositioning::hideTerminal()
 {
-	application_hook_->refresh_terminal_position();
+	application_hook_->refreshTerminalPosition();
 	long oldPositionY = application_hook_->getApplicationRect()->top;
 	double y = oldPositionY;
 	double count = 0.0;
-	const long rectHeight = application_hook_->calc_rect_height() + 50;
+	const long rectHeight = application_hook_->calcRectHeight() + 50;
 	const double diff = rectHeight + oldPositionY + 50;
 
 
 	while (y > rectHeight * -1 + 1)
 	{
-		y = calc_drop(count, -10) * diff - (rectHeight + 50);
+		y = calcDrop(count, -10) * diff - (rectHeight + 50);
 
-		mov_app_to_pos_no_resize_in_focus(application_hook_->getApplicationRect()->left, static_cast<int>(y));
+		movAppToPosNoResize(application_hook_->getApplicationRect()->left, static_cast<int>(y));
 
 		Sleep(animation_speed);
 
@@ -83,7 +83,7 @@ void ApplicationPositioning::hide_terminal()
 	}
 
 	// When Application hides, it should get out of tha wheeyy
-	unfocus_application();
+	unfocusApplication();
 
 	isOpen = FALSE;
 }
@@ -93,18 +93,18 @@ void ApplicationPositioning::toggle_terminal()
 {
 	if (isOpen)
 	{
-		hide_terminal();
+		hideTerminal();
 	}
 	else
 	{
-		drop_terminal();
+		dropTerminal();
 	}
 }
 
-void ApplicationPositioning::unfocus_application()
+void ApplicationPositioning::unfocusApplication()
 {
-	application_hook_->refresh_terminal_position();
-	SetWindowPos(application_hook_->getApplicationInformation()->get_hwnd(),
+	application_hook_->refreshTerminalPosition();
+	SetWindowPos(application_hook_->getApplicationInformation()->getHwnd(),
 		HWND_NOTOPMOST,
 		application_hook_->getApplicationRect()->left,
 		application_hook_->getApplicationRect()->top,

@@ -16,12 +16,12 @@ public:
 		app_name_ = app_name;
 	}
 
-	HWND get_hwnd()
+	HWND getHwnd()
 	{
 		return hwnd_;
 	}
 
-	std::string get_app_name()
+	std::string getAppName()
 	{
 		return app_name_;
 	}

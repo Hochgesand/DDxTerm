@@ -12,7 +12,7 @@ ApplicationManager::ApplicationManager()
 
 void ApplicationManager::refreshRunningApps()
 {
-    openApplications = WindowGrabber::get_open_windows_applications();
+    openApplications = WindowGrabber::getOpenWindowsApplications();
 }
 
 // dd steht nicht für DOPPEL D sondern für DropDown
@@ -24,9 +24,9 @@ void ApplicationManager::select_application_for_dd(std::string app_name)
         if (element.second == app_name)
         {
             selectedApplication = std::make_unique<ApplicationPositioning>(Application_Hook(element.first, element.second));
-            selectedApplication->hotkey_handle = std::async(
+            selectedApplication->hotkeyHandle = std::async(
                 std::launch::async,
-                register_hotkey_with_method,
+                registerHotkeyWithMethod,
                 0x42,
                 [&] { selectedApplication->toggle_terminal(); },
                 &terminator
@@ -45,6 +45,6 @@ void ApplicationManager::deselectTerm()
     terminator = false;
     if (selectedApplication != nullptr)
     {
-        selectedApplication->unfocus_application();
+        selectedApplication->unfocusApplication();
     }
 }
