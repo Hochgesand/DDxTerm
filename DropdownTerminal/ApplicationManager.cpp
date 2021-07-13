@@ -2,7 +2,6 @@
 
 #include <future>
 #include <memory>
-#include <KeyboardHook.h>
 #include <WindowGrabber.h>
 #include <algorithm>
 
@@ -14,6 +13,13 @@ ApplicationManager::ApplicationManager()
 void ApplicationManager::refreshRunningApps()
 {
     openApplications = WindowGrabber::getOpenWindowsApplications();
+    for (auto& selected_application : selectedApplications)
+    {
+	    if (*selected_application->getTerminator() == false)
+	    {
+            deselectTerm(selected_application->getApplicationHook()->getApplicationInformation()->getAppName());
+	    }
+    }
 }
 
 // dd steht nicht für DOPPEL D sondern für DropDown
@@ -24,13 +30,6 @@ void ApplicationManager::select_application_for_dd(std::string app_name)
         if (element.second == app_name)
         {        	
             selectedApplications.push_back(std::make_unique<ApplicationPositioning>(Application_Hook(element.first, element.second)));
-            selectedApplications.back()->hotkeyHandle = std::async(
-                std::launch::async,
-                registerHotkeyWithMethod,
-                0x42,
-                [&] { selectedApplications.back()->toggle_terminal(); },
-                selectedApplications.back()->getTerminator()
-            );
         }
     }
 }
@@ -44,7 +43,15 @@ void ApplicationManager::deselectTerm(std::string appname)
 {
 	for (auto& element : selectedApplications)
 	{
-		if (element->getApplicationHook()->getApplicationInformation()->getAppName() == appname)
+		if(element == nullptr)
+		{
+            selectedApplications.erase(
+                std::remove(selectedApplications.begin(), selectedApplications.end(), element),
+                selectedApplications.end()
+            );
+			continue;
+		}
+		if (element->getApplicationHook()->getApplicationInformation()->getAppName() == appname && !*element->getTerminator())
 		{
             element->unfocusApplication();
             element->terminate();
@@ -62,6 +69,18 @@ void ApplicationManager::deselectTerm()
     {
         element->unfocusApplication();
         element->terminate();
-        selectedApplications.clear();
     }
+    selectedApplications.clear();
+}
+
+std::vector<std::string> ApplicationManager::getHookedApps()
+{
+    refreshRunningApps();
+	std::vector<std::string> hookedApps;
+	for (auto& element : selectedApplications)
+	{
+		hookedApps.push_back(element->getApplicationHook()->getApplicationInformation()->getAppName());
+	}
+
+	return hookedApps;
 }

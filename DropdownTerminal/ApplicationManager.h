@@ -12,6 +12,7 @@ public:
 	std::map<HWND, std::string>* getOpenApps();
     void deselectTerm(std::string);
     void deselectTerm();
+    std::vector<std::string> getHookedApps();
 private:
     std::map<HWND, std::string> openApplications;
     std::vector<std::unique_ptr<ApplicationPositioning>> selectedApplications;

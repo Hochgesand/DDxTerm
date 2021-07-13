@@ -1,4 +1,5 @@
 #include "ApplicationPositioning.h"
+#include "KeyboardHook.h"
 
 #include <thread>
 
@@ -7,6 +8,13 @@ ApplicationPositioning::ApplicationPositioning() = default;
 ApplicationPositioning::ApplicationPositioning(Application_Hook application_hook)
 {
 	application_hook_ = (std::make_unique<Application_Hook>(application_hook));
+	hotkeyHandle = std::async(
+		std::launch::async,
+		registerHotkeyWithMethod,
+		0x42,
+		[&] { toggle_terminal(); },
+		getTerminator()
+	);
 }
 
 double ApplicationPositioning::calcDrop(const double x, const double k)

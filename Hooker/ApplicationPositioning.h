@@ -16,7 +16,7 @@ private:
 	bool terminator = true;
 public:
 	ApplicationPositioning();
-	ApplicationPositioning(Application_Hook);
+	ApplicationPositioning(Application_Hook application_hook);
 	void toggle_terminal();
 	void movAppToPosNoResize(const long x, const long y);
 	void unfocusApplication();

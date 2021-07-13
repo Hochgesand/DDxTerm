@@ -37,8 +37,14 @@ fMainFrame::~fMainFrame()
 void fMainFrame::OnComboboxSelected(wxCommandEvent& evt)
 {
 	application_manager_->select_application_for_dd(m_combo_box1->GetValue().ToStdString());
-	grid->SetRows(grid->GetRows() + 1);
-	grid->Add(new wxStaticText(this, wxID_ANY, m_combo_box1->GetValue().ToStdString(), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL));
+	auto hookedApps = application_manager_->getHookedApps();
+	// Bug, old hooked apps wont get removed
+	for (auto element : hookedApps)
+	{
+		grid->SetRows(grid->GetRows() + 1);
+		grid->Add(new wxStaticText(this, wxID_ANY, element, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL));
+	}
+	
 	this->SetSizer(grid);
 	grid->Layout();
 }
