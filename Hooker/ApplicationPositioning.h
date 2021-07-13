@@ -13,6 +13,7 @@ private:
 	void hideTerminal();
 	static double calcDrop(const double x, const double k);
 	std::unique_ptr<Application_Hook> application_hook_;
+	bool terminator = true;
 public:
 	ApplicationPositioning();
 	ApplicationPositioning(Application_Hook);
@@ -24,5 +25,8 @@ public:
 	{
 		return application_hook_.get();
 	}
+
+	void terminate();
+	bool* getTerminator();
 };
 

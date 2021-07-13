@@ -112,3 +112,13 @@ void ApplicationPositioning::unfocusApplication()
 		application_hook_->getApplicationRect()->bottom - application_hook_->getApplicationRect()->top,
 		NULL);
 }
+
+void ApplicationPositioning::terminate()
+{
+	terminator = false;
+}
+
+bool* ApplicationPositioning::getTerminator()
+{
+	return &terminator;
+}

@@ -4,6 +4,7 @@
 #include <memory>
 #include <KeyboardHook.h>
 #include <WindowGrabber.h>
+#include <algorithm>
 
 ApplicationManager::ApplicationManager()
 {
@@ -18,33 +19,49 @@ void ApplicationManager::refreshRunningApps()
 // dd steht nicht für DOPPEL D sondern für DropDown
 void ApplicationManager::select_application_for_dd(std::string app_name)
 {
-    terminator = true;
     for (auto element : openApplications)
     {
         if (element.second == app_name)
-        {
-            selectedApplication = std::make_unique<ApplicationPositioning>(Application_Hook(element.first, element.second));
-            selectedApplication->hotkeyHandle = std::async(
+        {        	
+            selectedApplications.push_back(std::make_unique<ApplicationPositioning>(Application_Hook(element.first, element.second)));
+            selectedApplications.back()->hotkeyHandle = std::async(
                 std::launch::async,
                 registerHotkeyWithMethod,
                 0x42,
-                [&] { selectedApplication->toggle_terminal(); },
-                &terminator
+                [&] { selectedApplications.back()->toggle_terminal(); },
+                selectedApplications.back()->getTerminator()
             );
         }
     }
 }
 
-std::map<HWND, std::string> ApplicationManager::getOpenApps()
+std::map<HWND, std::string>* ApplicationManager::getOpenApps()
 {
-    return std::map<HWND, std::string>(openApplications);
+    return &openApplications;
+}
+
+void ApplicationManager::deselectTerm(std::string appname)
+{
+	for (auto& element : selectedApplications)
+	{
+		if (element->getApplicationHook()->getApplicationInformation()->getAppName() == appname)
+		{
+            element->unfocusApplication();
+            element->terminate();
+            selectedApplications.erase(
+                std::remove(selectedApplications.begin(), selectedApplications.end(), element),
+                selectedApplications.end()
+            );
+		}
+	}
 }
 
 void ApplicationManager::deselectTerm()
 {
-    terminator = false;
-    if (selectedApplication != nullptr)
+    for (auto& element : selectedApplications)
     {
-        selectedApplication->unfocusApplication();
+        element->unfocusApplication();
+        element->terminate();
+        selectedApplications.clear();
     }
 }
