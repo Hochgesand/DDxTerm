@@ -39,26 +39,28 @@ std::map<HWND, std::string>* ApplicationManager::getOpenApps()
     return &openApplications;
 }
 
+void ApplicationManager::eraseSelectedApplication(std::unique_ptr<ApplicationPositioning>& element)
+{
+    selectedApplications.erase(
+        std::remove(selectedApplications.begin(), selectedApplications.end(), element),
+        selectedApplications.end()
+    );
+}
+
 void ApplicationManager::deselectTerm(std::string appname)
 {
-	for (auto& element : selectedApplications)
+	for (std::unique_ptr<ApplicationPositioning>& element : selectedApplications)
 	{
 		if(element == nullptr)
 		{
-            selectedApplications.erase(
-                std::remove(selectedApplications.begin(), selectedApplications.end(), element),
-                selectedApplications.end()
-            );
+            eraseSelectedApplication(element);
 			continue;
 		}
 		if (element->getApplicationHook()->getApplicationInformation()->getAppName() == appname && !*element->getTerminator())
 		{
             element->unfocusApplication();
             element->terminate();
-            selectedApplications.erase(
-                std::remove(selectedApplications.begin(), selectedApplications.end(), element),
-                selectedApplications.end()
-            );
+            eraseSelectedApplication(element);
 		}
 	}
 }
@@ -84,3 +86,4 @@ std::vector<std::string> ApplicationManager::getHookedApps()
 
 	return hookedApps;
 }
+

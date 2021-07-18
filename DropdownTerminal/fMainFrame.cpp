@@ -34,6 +34,11 @@ fMainFrame::~fMainFrame()
 {
 }
 
+void fMainFrame::Update()
+{
+	
+}
+
 void fMainFrame::OnComboboxSelected(wxCommandEvent& evt)
 {
 	application_manager_->select_application_for_dd(m_combo_box1->GetValue().ToStdString());

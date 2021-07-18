@@ -16,5 +16,6 @@ public:
 private:
     std::map<HWND, std::string> openApplications;
     std::vector<std::unique_ptr<ApplicationPositioning>> selectedApplications;
+    void eraseSelectedApplication(std::unique_ptr<ApplicationPositioning>&);
 };
 

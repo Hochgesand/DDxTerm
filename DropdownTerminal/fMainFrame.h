@@ -14,7 +14,8 @@ public:
 	wxStaticText* openAppsText = nullptr;
 	std::vector<wxStaticText*> open_apps_vector;
 	wxGridSizer* grid = new wxGridSizer(2, 1, 5, 5);
-	
+
+	void Update();
 	void OnComboboxSelected(wxCommandEvent& evt);
 	void OnClose(wxCloseEvent& evt);
 

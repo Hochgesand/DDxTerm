@@ -164,6 +164,7 @@
     <ClCompile Include="ApplicationManager.cpp" />
     <ClCompile Include="fApp.cpp" />
     <ClCompile Include="fMainFrame.cpp" />
+    <ClCompile Include="IObservers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hooker\Hooker.vcxproj">
@@ -174,6 +175,7 @@
     <ClInclude Include="ApplicationManager.h" />
     <ClInclude Include="fApp.h" />
     <ClInclude Include="fMainFrame.h" />
+    <ClInclude Include="IObservers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
