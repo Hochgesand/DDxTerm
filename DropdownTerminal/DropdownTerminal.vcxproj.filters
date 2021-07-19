@@ -24,9 +24,6 @@
     <ClCompile Include="fMainFrame.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="IObservers.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ApplicationManager.h">
@@ -38,7 +35,7 @@
     <ClInclude Include="fMainFrame.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="IObservers.h">
+    <ClInclude Include="AppManagerObserver.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

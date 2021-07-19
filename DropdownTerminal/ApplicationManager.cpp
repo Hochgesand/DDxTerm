@@ -5,6 +5,8 @@
 #include <WindowGrabber.h>
 #include <algorithm>
 
+#include "AppManagerObserver.h"
+
 ApplicationManager::ApplicationManager()
 {
 	refreshRunningApps();
@@ -23,13 +25,15 @@ void ApplicationManager::refreshRunningApps()
 }
 
 // dd steht nicht für DOPPEL D sondern für DropDown
-void ApplicationManager::select_application_for_dd(std::string app_name)
+void ApplicationManager::select_application_for_dd(std::string app_name, unsigned int hotkey)
 {
     for (auto element : openApplications)
     {
         if (element.second == app_name)
         {        	
-            selectedApplications.push_back(std::make_unique<ApplicationPositioning>(Application_Hook(element.first, element.second)));
+            selectedApplications.push_back(std::make_unique<ApplicationPositioning>(Application_Hook(element.first, element.second), hotkey));
+            notify();
+            break;
         }
     }
 }
@@ -63,6 +67,7 @@ void ApplicationManager::deselectTerm(std::string appname)
             eraseSelectedApplication(element);
 		}
 	}
+    notify();
 }
 
 void ApplicationManager::deselectTerm()
@@ -73,6 +78,7 @@ void ApplicationManager::deselectTerm()
         element->terminate();
     }
     selectedApplications.clear();
+    notify();
 }
 
 std::vector<std::string> ApplicationManager::getHookedApps()
@@ -83,7 +89,25 @@ std::vector<std::string> ApplicationManager::getHookedApps()
 	{
 		hookedApps.push_back(element->getApplicationHook()->getApplicationInformation()->getAppName());
 	}
-
+    
 	return hookedApps;
+}
+
+void ApplicationManager::notify()
+{
+	for (auto element : observers_)
+	{
+        element->Update();
+	}
+}
+
+void ApplicationManager::attach(AppManagerObserver* amo)
+{
+	observers_.push_back(amo);
+}
+
+void ApplicationManager::detach(AppManagerObserver* amo)
+{
+	observers_.erase(std::remove(observers_.begin(), observers_.end(), amo), observers_.end());
 }
 
