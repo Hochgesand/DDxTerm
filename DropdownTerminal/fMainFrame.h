@@ -20,7 +20,6 @@ public:
 	wxComboBox* mHotkeyModifier = nullptr;
 	wxButton* m_button = nullptr;
 	wxBoxSizer* main_vbox;
-	std::shared_ptr<std::map<HWND, std::string>> openAppsPtr;
 
 	std::vector<wxBoxSizer*> hookedAppsLines;
 	
