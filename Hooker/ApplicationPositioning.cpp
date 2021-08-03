@@ -7,7 +7,7 @@ ApplicationPositioning::ApplicationPositioning() = default;
 
 ApplicationPositioning::ApplicationPositioning(Application_Hook application_hook, UINT hotkey, UINT modHotkey)
 {
-	_applicationHook = (std::make_unique<Application_Hook>(application_hook));
+	_applicationHook = (std::make_shared<Application_Hook>(application_hook));
 	hotkeyHandle = std::async(
 		std::launch::async,
 		registerHotkeyWithMethod,
@@ -122,12 +122,17 @@ void ApplicationPositioning::unfocusApplication()
 		NULL);
 }
 
+std::shared_ptr<Application_Hook> ApplicationPositioning::getApplicationHook() const
+{
+	return _applicationHook;
+}
+
 void ApplicationPositioning::terminate()
 {
 	terminator = false;
 }
 
-bool* ApplicationPositioning::getTerminator()
+std::shared_ptr<bool> ApplicationPositioning::getTerminator()
 {
-	return &terminator;
+	return std::make_shared<bool>(terminator);
 }

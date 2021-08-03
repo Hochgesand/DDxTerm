@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void registerHotkeyWithMethod(UINT button, UINT modButton, const std::function<void()> function_on_hotkey, bool* running)
+void registerHotkeyWithMethod(UINT button, UINT modButton, const std::function<void()> functionOnHotkey, std::shared_ptr<bool> running)
 {
 	if (RegisterHotKey(
 		nullptr,
@@ -24,7 +24,7 @@ void registerHotkeyWithMethod(UINT button, UINT modButton, const std::function<v
 		{
 			if (msg.message == WM_HOTKEY)
 			{
-				function_on_hotkey();
+				functionOnHotkey();
 			}
 		}
 		if (!(*running))

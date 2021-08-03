@@ -18,12 +18,12 @@ void Application_Hook::refreshTerminalPosition()
 	GetWindowRect(terminal_.getHwnd(), &terminalPos);
 }
 
-RECT* Application_Hook::getApplicationRect()
+std::shared_ptr<RECT> Application_Hook::getApplicationRect()
 {
-	return &terminalPos;
+	return std::make_shared<RECT>(terminalPos);
 }
 
-HookedWindow* Application_Hook::getApplicationInformation()
+std::shared_ptr<HookedWindow> Application_Hook::getApplicationInformation()
 {
-	return &terminal_;
+	return std::make_shared<HookedWindow>(terminal_);
 }

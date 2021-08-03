@@ -14,6 +14,6 @@ public:
 	Application_Hook(HWND, std::string);
 	void refreshTerminalPosition();
 	long calcRectHeight() const;
-	RECT* getApplicationRect();
-	HookedWindow* getApplicationInformation();
+	std::shared_ptr<RECT> getApplicationRect();
+	std::shared_ptr<HookedWindow> getApplicationInformation();
 };
