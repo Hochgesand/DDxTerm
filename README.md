@@ -5,11 +5,11 @@ A Quakestyle DropdownTerminal for Windows.
 ------
 
 I wanted such a terminal for Windows so I made one.
-It basically just hooks a window which you can select and moves it up and down, in this stage this is more just a proof of concept.
+It basically just hooks a window which you can select and moves it up and down.
 
 ![ABullTLIiA](https://user-images.githubusercontent.com/19613854/128044560-d1bd7921-727a-4923-954e-fd754ff790b0.gif)
 
-Btw: I used wxWidgets for the GUI, it's really good.
+Btw: I used wxWidgets for the GUI.
 
 FYI https://wxwidgets.org/
 
