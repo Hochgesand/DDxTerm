@@ -16,11 +16,10 @@ public:
 public:
 	wxComboBox* mComboboxOpenApps = nullptr;
 	wxStaticText* openAppsText = nullptr;
-	wxComboBox* m_hotkey_control = nullptr;
+	wxComboBox* mhotkeyControl = nullptr;
 	wxComboBox* mHotkeyModifier = nullptr;
-	wxButton* m_button = nullptr;
-	wxBoxSizer* main_vbox;
-	std::shared_ptr<std::map<HWND, std::string>> openAppsPtr;
+	wxButton* mbutton = nullptr;
+	wxBoxSizer* mainVbox;
 
 	std::vector<wxBoxSizer*> hookedAppsLines;
 	

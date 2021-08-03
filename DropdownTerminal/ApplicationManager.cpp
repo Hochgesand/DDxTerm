@@ -15,11 +15,11 @@ ApplicationManager::ApplicationManager()
 void ApplicationManager::refreshRunningApps()
 {
     openApplications = WindowGrabber::getOpenWindowsApplications();
-    for (auto& selected_application : selectedApplications)
+    for (auto& selectedApplication : selectedApplications)
     {
-	    if (*selected_application->getTerminator() == false)
+	    if (*selectedApplication->getTerminator() == false)
 	    {
-            deselectTerm(selected_application->getApplicationHook()->getApplicationInformation()->getAppName());
+            deselectTerm(selectedApplication->getApplicationHook()->getApplicationInformation()->getAppName());
 	    }
     }
 }
@@ -102,7 +102,7 @@ std::vector<std::string> ApplicationManager::getHookedApps()
 
 void ApplicationManager::notify()
 {
-	for (auto element : observers_)
+	for (auto element : _observers)
 	{
         element->Update();
 	}
@@ -110,11 +110,11 @@ void ApplicationManager::notify()
 
 void ApplicationManager::attach(AppManagerObserver* amo)
 {
-	observers_.push_back(amo);
+	_observers.push_back(amo);
 }
 
 void ApplicationManager::detach(AppManagerObserver* amo)
 {
-	observers_.erase(std::remove(observers_.begin(), observers_.end(), amo), observers_.end());
+	_observers.erase(std::remove(_observers.begin(), _observers.end(), amo), _observers.end());
 }
 
