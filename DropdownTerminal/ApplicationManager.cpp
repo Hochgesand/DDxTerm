@@ -14,9 +14,11 @@ ApplicationManager::ApplicationManager()
 
 void ApplicationManager::refreshRunningApps()
 {
+	
     openApplications = WindowGrabber::getOpenWindowsApplications();
     for (auto& selectedApplication : selectedApplications)
     {
+        selectedApplication->getApplicationHook()->refreshTerminalPosition();
 	    if (*selectedApplication->getTerminator() == false)
 	    {
             deselectTerm(selectedApplication->getApplicationHook()->getApplicationInformation()->getAppName());
@@ -53,6 +55,7 @@ void ApplicationManager::eraseSelectedApplication(std::shared_ptr<ApplicationPos
 
 void ApplicationManager::deselectTerm(std::string appname)
 {
+	// When UNHOOKed search for ApplicationPositioning object and terminate it.
 	for (auto element : selectedApplications)
 	{
 		if(element == nullptr)
@@ -62,8 +65,6 @@ void ApplicationManager::deselectTerm(std::string appname)
 		}
 		if (element->getApplicationHook()->getApplicationInformation()->getAppName() == appname)
 		{
-            element->dropTerminal();
-            element->unfocusApplication();
             element->terminate();
             eraseSelectedApplication(element);
             break;
@@ -88,13 +89,13 @@ void ApplicationManager::deselectTerm()
     notify();
 }
 
-std::vector<std::string> ApplicationManager::getHookedApps()
+std::vector<std::shared_ptr<ApplicationPositioning>> ApplicationManager::getHookedApps()
 {
     refreshRunningApps();
-	std::vector<std::string> hookedApps;
-	for (auto& element : selectedApplications)
+	std::vector<std::shared_ptr<ApplicationPositioning>> hookedApps = {};
+	for (auto const element : selectedApplications)
 	{
-		hookedApps.push_back(element->getApplicationHook()->getApplicationInformation()->getAppName());
+        hookedApps.push_back(element);
 	}
     
 	return hookedApps;

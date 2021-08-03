@@ -20,6 +20,6 @@ public:
     void attach(AppManagerObserver* amo);
     void detach(AppManagerObserver* amo);
     std::shared_ptr<std::map<HWND, std::string>> getOpenApps();
-    std::vector<std::string> getHookedApps();
+    std::vector<std::shared_ptr<ApplicationPositioning>> getHookedApps();
 };
 

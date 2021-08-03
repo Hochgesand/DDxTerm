@@ -7,6 +7,8 @@ ApplicationPositioning::ApplicationPositioning() = default;
 
 ApplicationPositioning::ApplicationPositioning(Application_Hook application_hook, UINT hotkey, UINT modHotkey)
 {
+	hotkeys.push_back(modHotkey);
+	hotkeys.push_back(hotkey);
 	_applicationHook = (std::make_shared<Application_Hook>(application_hook));
 	hotkeyHandle = std::async(
 		std::launch::async,
@@ -28,15 +30,16 @@ double ApplicationPositioning::calcDrop(const double x, const double k)
 }
 
 void ApplicationPositioning::dropTerminal()
-{
+{	
 	_applicationHook->refreshTerminalPosition();
+	ShowWindow(_applicationHook->getApplicationInformation()->getHwnd(), SW_RESTORE);
 	const long oldPositionY = _applicationHook->getApplicationRect()->top;
 	// oldPosition is equal to y in the beginning. OldPos is used for (m * x + b) calculation in the start of the while loop.
 	double y = _applicationHook->getApplicationRect()->top;
 	double count = 0.0;
-	const double diff = (_applicationHook->getApplicationRect()->top + 30) * -1;
+	const double diff = (_applicationHook->getApplicationRect()->top + (-1 * hookedAppOffset)) * -1;
 
-	while (y < -31.0)
+	while (y < hookedAppOffset - 1)
 	{
 		// Essentially m * x + b where b is the old Position where the animation started and the diff is the way to go to drop the Application and x is count.
 		y = calcDrop(count, 10) * diff + oldPositionY;
@@ -90,6 +93,7 @@ void ApplicationPositioning::hideTerminal()
 
 		count += 0.05;
 	}
+	ShowWindow(_applicationHook->getApplicationInformation()->getHwnd(), SW_HIDE);
 
 	// When Application hides, it should get out of tha wheeyy
 	unfocusApplication();
@@ -122,6 +126,11 @@ void ApplicationPositioning::unfocusApplication()
 		NULL);
 }
 
+std::vector<uint32_t> ApplicationPositioning::getHotkeys()
+{
+	return hotkeys;
+}
+
 std::shared_ptr<Application_Hook> ApplicationPositioning::getApplicationHook() const
 {
 	return _applicationHook;
@@ -129,10 +138,13 @@ std::shared_ptr<Application_Hook> ApplicationPositioning::getApplicationHook() c
 
 void ApplicationPositioning::terminate()
 {
-	terminator = false;
+	hookedAppOffset = 0;
+	dropTerminal();
+	unfocusApplication();
+	*terminator = false;
 }
 
-bool* ApplicationPositioning::getTerminator()
+std::shared_ptr<bool> ApplicationPositioning::getTerminator()
 {
-	return &terminator;
+	return terminator;
 }

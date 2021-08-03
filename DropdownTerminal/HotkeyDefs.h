@@ -155,3 +155,27 @@ std::map<const std::string, const uint32_t> HOTKEYS = {
         {"OEM_MINUS", 0xBD},
         {"OEM_PERIOD", 0xBE}
 };
+
+std::string getHotkeyNameByUINT(const uint32_t key)
+{
+    for (auto it = HOTKEYS.begin(); it != HOTKEYS.end(); ++it)
+    {
+	    if (it->second == key)
+	    {
+            return it->first;
+	    }
+    }
+    return "";
+}
+
+std::string getModHotkeyNameByUINT(const uint32_t key)
+{
+    for (auto it = KEYMODS.begin(); it != KEYMODS.end(); ++it)
+    {
+	    if (it->second == key)
+	    {
+            return it->first;
+	    }
+    }
+    return "";
+}

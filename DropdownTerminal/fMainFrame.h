@@ -19,15 +19,17 @@ public:
 	wxComboBox* mhotkeyControl = nullptr;
 	wxComboBox* mHotkeyModifier = nullptr;
 	wxButton* mbutton = nullptr;
+	wxButton* mbuttonRefresh = nullptr;
 	wxBoxSizer* mainVbox;
 
 	std::vector<wxBoxSizer*> hookedAppsLines;
-	
-	std::map<wxStaticText*, wxButton*> hookedAndShownApps;
+
+	std::vector<std::vector<wxWindow*>> hookedAndShownApps;
 	
 	wxPanel* panel = nullptr;
 
 	void OnHookButtonPressed(wxCommandEvent& evt);
+	void OnRefreshPosButtonPressed(wxCommandEvent& evt);
 	void OnUnhookButtonPressed(wxCommandEvent& evt);
 	void OnClose(wxCloseEvent& evt);
 	void Update() override;

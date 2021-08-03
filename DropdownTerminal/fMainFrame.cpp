@@ -7,6 +7,7 @@
 wxBEGIN_EVENT_TABLE(fMainFrame, wxFrame)
 	EVT_CLOSE(OnClose)
 	EVT_BUTTON(1337, OnHookButtonPressed)
+	EVT_BUTTON(1338, OnRefreshPosButtonPressed)
 	EVT_COMBOBOX_DROPDOWN(501, OnAppComboboxOpen)
 wxEND_EVENT_TABLE()
 
@@ -24,6 +25,7 @@ wxFrame(nullptr, 420, "DDxTerm", wxDefaultPosition, wxSize(600, 200))
 	mHotkeyModifier = new wxComboBox(panel, wxID_ANY, "mod hotkey", wxDefaultPosition, wxSize(50, 25));
 	mhotkeyControl = new wxComboBox(panel, wxID_ANY, "select hotkey", wxDefaultPosition, wxSize(50, 25));
 	mbutton = new wxButton(panel, 1337, "HOOK");
+	mbuttonRefresh = new wxButton(panel, 1338, "reload pos");
 
 	for (auto const open_apps_string_arr : *getAppManager()->getOpenApps())
 	{
@@ -45,6 +47,7 @@ wxFrame(nullptr, 420, "DDxTerm", wxDefaultPosition, wxSize(600, 200))
 	hbox1->Add(mHotkeyModifier, 1);
 	hbox1->Add(mhotkeyControl, 1);
 	hbox1->Add(mbutton, 1);
+	hbox1->Add(mbuttonRefresh, 1);
 	
 	mainVbox->Add(hbox1, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
 
@@ -60,8 +63,10 @@ void fMainFrame::Update()
 
 	for (auto hooked_and_shown_app : hookedAndShownApps)
 	{
-		hooked_and_shown_app.first->Destroy();
-		hooked_and_shown_app.second->Destroy();
+		for (auto and_shown_app : hooked_and_shown_app)
+		{
+			and_shown_app->Destroy();
+		}
 	}
 
 	for (auto hooked_apps_line : hookedAppsLines)
@@ -74,20 +79,28 @@ void fMainFrame::Update()
 	hookedAndShownApps.clear();
 
 	unsigned int counter = 0;
-	for (auto element : hookedApps)
+	for (auto &element : hookedApps)
 	{
+		element->getApplicationHook()->refreshTerminalPosition();
 		auto newHbox = new wxBoxSizer(wxHORIZONTAL);
 		hookedAppsLines.push_back(newHbox);
 		
-		auto tempText = new wxStaticText(panel, wxID_ANY, element);
+		auto tempText = new wxStaticText(panel, wxID_ANY, element->getApplicationHook()->getApplicationInformation()->getAppName());
+		auto tempDebugXYText{ "X: " + std::to_string(element->getApplicationHook()->getApplicationRect()->left) +
+			" Y: " + std::to_string(element->getApplicationHook()->getApplicationRect()->top)};
+		
+		auto hotkeyDebugText = new wxStaticText(panel, wxID_ANY,"Hotkey: " + getModHotkeyNameByUINT(element->getHotkeys().at(0)) + " + " + getHotkeyNameByUINT(element->getHotkeys().at(1)));
+		auto tempDebugInfoXY = new wxStaticText(panel, wxID_ANY, tempDebugXYText);
 		auto tempButton = new wxButton(panel, offsetID + counter, "UNHOOK");
 		tempButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &fMainFrame::OnUnhookButtonPressed, this);
-		hookedAndShownApps.insert({ tempText, tempButton });
+		hookedAndShownApps.push_back({ tempText, tempDebugInfoXY, hotkeyDebugText, tempButton });
 		
 		newHbox->Add(tempText, 1, wxTOP, 10);
+		newHbox->Add(hotkeyDebugText, 1, wxTOP, 10);
+		newHbox->Add(tempDebugInfoXY, 1, wxTOP, 10);
 		newHbox->Add(tempButton, 1, wxTOP, 10);
 		
-		mainVbox->Add(newHbox, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
+		mainVbox->Add(newHbox, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 2);
 		counter++;
 	}
 	panel->SetSizer(mainVbox);
@@ -125,12 +138,16 @@ void fMainFrame::OnHookButtonPressed(wxCommandEvent& evt)
 	getAppManager()->select_application_for_dd(mComboboxOpenApps->GetValue().ToStdString(), tempHotkey, tempModHotkey);
 }
 
+void fMainFrame::OnRefreshPosButtonPressed(wxCommandEvent& evt)
+{
+	Update();
+}
+
 void fMainFrame::OnUnhookButtonPressed(wxCommandEvent& evt)
 {
 	auto hookedApps = getAppManager()->getHookedApps();
 	const auto getButtonId = evt.GetId();
-	// this magic number is there to substract the offset ID as seen in line 55.
-	const auto getAppNameToClose = hookedApps.at(getButtonId - offsetID);
+	const auto getAppNameToClose = hookedApps.at(getButtonId - offsetID)->getApplicationHook()->getApplicationInformation()->getAppName();
 	getAppManager()->deselectTerm(getAppNameToClose);
 }
 
