@@ -96,7 +96,7 @@ void fMainFrame::Update()
 		auto tempDebugXYText{ "X: " + std::to_string(element->getApplicationHook()->getApplicationRect()->left) +
 			" Y: " + std::to_string(element->getApplicationHook()->getApplicationRect()->top)};
 		
-		auto hotkeyDebugText = new wxStaticText(panel, wxID_ANY,"Hotkey: " + getModHotkeyNameByUINT(element->getHotkeys().at(0)) + " + " + getHotkeyNameByUINT(element->getHotkeys().at(1)));
+		auto hotkeyDebugText = new wxStaticText(panel, wxID_ANY,"Hotkey: " + getModHotkeyNameByUINT(element->getSelectedHotkeys().at(0)) + " + " + getHotkeyNameByUINT(element->getSelectedHotkeys().at(1)), wxDefaultPosition, wxSize(200, 25));
 		auto tempDebugInfoXY = new wxStaticText(panel, wxID_ANY, tempDebugXYText);
 		auto tempButton = new wxButton(panel, offsetID + counter, "UNHOOK");
 		tempButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, &fMainFrame::OnUnhookButtonPressed, this);

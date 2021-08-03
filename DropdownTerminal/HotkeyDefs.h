@@ -8,6 +8,7 @@
  https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerhotkey
 */
 std::map<const std::string, const uint64_t> KEYMODS = {
+    {"NO MOD", 0x0},
 	{"ALT", 0x0001},
 	{"CTRL", 0x0002},
 	{"SHIFT", 0x0004},

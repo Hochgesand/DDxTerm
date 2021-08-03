@@ -20,13 +20,13 @@ public:
 	void toggleTerminal();
 	void dropTerminal();
 	void hideTerminal();
-	void movAppToPosNoResize(const long x, const long y);
-	void unfocusApplication();
-	std::vector<uint32_t> getHotkeys();
+	void movAppToPosNoResize(const long x, const long y) const;
+	void unfocusApplication() const;
+	std::vector<uint32_t> getSelectedHotkeys() const;
 	std::future<void> hotkeyHandle;
 	std::shared_ptr<Application_Hook> getApplicationHook() const;
 
 	void terminate();
-	std::shared_ptr<bool> getTerminator();
+	std::shared_ptr<bool> getTerminator() const;
 };
 
