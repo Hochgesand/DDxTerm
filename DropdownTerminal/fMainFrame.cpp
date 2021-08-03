@@ -57,10 +57,13 @@ wxFrame(nullptr, 420, "DDxTerm", wxDefaultPosition, wxSize(600, 200))
 
 fMainFrame::~fMainFrame() = default;
 
+// Update frontend information
+// Everything that has updatable information from an Observer gets updated here
 void fMainFrame::Update()
 {
 	auto hookedApps = getAppManager()->getHookedApps();
 
+	// Delete all old information
 	for (auto hooked_and_shown_app : hookedAndShownApps)
 	{
 		for (auto and_shown_app : hooked_and_shown_app)
@@ -69,12 +72,15 @@ void fMainFrame::Update()
 		}
 	}
 
+	// Don't know how to split frontend into multiple classes
+	// NEED TO DO THAT NEXT, will be there in one or two master merges.
 	for (auto hooked_apps_line : hookedAppsLines)
 	{
 		mainVbox->Detach(hooked_apps_line);
 		delete hooked_apps_line;
 	}
 
+	// Clear those vectors
 	hookedAppsLines.clear();
 	hookedAndShownApps.clear();
 
@@ -84,7 +90,8 @@ void fMainFrame::Update()
 		element->getApplicationHook()->refreshTerminalPosition();
 		auto newHbox = new wxBoxSizer(wxHORIZONTAL);
 		hookedAppsLines.push_back(newHbox);
-		
+
+		// Prepare texts and paste them in. 
 		auto tempText = new wxStaticText(panel, wxID_ANY, element->getApplicationHook()->getApplicationInformation()->getAppName());
 		auto tempDebugXYText{ "X: " + std::to_string(element->getApplicationHook()->getApplicationRect()->left) +
 			" Y: " + std::to_string(element->getApplicationHook()->getApplicationRect()->top)};
@@ -109,6 +116,7 @@ void fMainFrame::Update()
 
 void fMainFrame::OnHookButtonPressed(wxCommandEvent& evt)
 {
+	// Initialized with values which dont exist in the VirtualKeyMap
 	uint32_t tempHotkey = 0xFF;
 	uint32_t tempModHotkey = 0xFF;
 	const auto getValHotkey = mhotkeyControl->GetValue().ToStdString();
@@ -138,6 +146,10 @@ void fMainFrame::OnHookButtonPressed(wxCommandEvent& evt)
 	getAppManager()->select_application_for_dd(mComboboxOpenApps->GetValue().ToStdString(), tempHotkey, tempModHotkey);
 }
 
+// Obvious methods do obvious things down here.
+
+// Debug method, used by a friend who has a pretty interesting monitorsetup which screws with my code.
+// He tests that.
 void fMainFrame::OnRefreshPosButtonPressed(wxCommandEvent& evt)
 {
 	Update();
@@ -153,7 +165,7 @@ void fMainFrame::OnUnhookButtonPressed(wxCommandEvent& evt)
 
 void fMainFrame::OnClose(wxCloseEvent& evt)
 {
-	getAppManager()->deselectTerm();
+	getAppManager()->deselectTerms();
 	Destroy();
 }
 

@@ -16,7 +16,7 @@ void ApplicationManager::refreshRunningApps()
 {
 	
     openApplications = WindowGrabber::getOpenWindowsApplications();
-    for (auto& selectedApplication : selectedApplications)
+    for (auto& selectedApplication : hookedApplications)
     {
         selectedApplication->getApplicationHook()->refreshTerminalPosition();
 	    if (*selectedApplication->getTerminator() == false)
@@ -33,30 +33,35 @@ void ApplicationManager::select_application_for_dd(std::string app_name, unsigne
     {
         if (element.second == app_name)
         {        	
-            selectedApplications.push_back(std::make_shared<ApplicationPositioning>(Application_Hook(element.first, element.second), hotkey, modHotkey));
+            hookedApplications.push_back(std::make_shared<ApplicationPositioning>(Application_Hook(element.first, element.second), hotkey, modHotkey));
             notify();
             break;
         }
     }
 }
 
+// Gets apps which are opened in generally
 std::shared_ptr<std::map<HWND, std::string>> ApplicationManager::getOpenApps()
 {
     return openApplications;
 }
 
+// Removes a specific Application from hookedApplications. Should only be used by deselectTerm(s)
 void ApplicationManager::eraseSelectedApplication(std::shared_ptr<ApplicationPositioning> element)
 {
-    selectedApplications.erase(
-        std::remove(selectedApplications.begin(), selectedApplications.end(), element),
-        selectedApplications.end()
+    hookedApplications.erase(
+        std::remove(hookedApplications.begin(), hookedApplications.end(), element),
+        hookedApplications.end()
     );
 }
 
+// When UNHOOKed search for ApplicationPositioning object and terminate it.
+// If its a nullpointer it shall be removed.
+// When Apps close without a UNHOOK its a nullpointer
 void ApplicationManager::deselectTerm(std::string appname)
 {
-	// When UNHOOKed search for ApplicationPositioning object and terminate it.
-	for (auto element : selectedApplications)
+	
+	for (auto element : hookedApplications)
 	{
 		if(element == nullptr)
 		{
@@ -73,27 +78,33 @@ void ApplicationManager::deselectTerm(std::string appname)
     notify();
 }
 
-void ApplicationManager::deselectTerm()
+// iterates over all hookedApplications and terminates them
+// This behavior is for example used while closing the app
+// if it finds nullpointer if just skips them.
+void ApplicationManager::deselectTerms()
 {
-    for (auto element : selectedApplications)
+	
+    for (auto element : hookedApplications)
     {
 	    if (element == nullptr)
 	    {
 		    continue;
 	    }
-        element->dropTerminal();
-        element->unfocusApplication();
         element->terminate();
     }
-    selectedApplications.clear();
+    hookedApplications.clear();
     notify();
 }
 
+/// <summary>
+/// gets all hooked apps as pointer to ApplicationPositionings
+/// </summary>
+/// <returns>vector of pointer of ApplicationPositionings</returns>
 std::vector<std::shared_ptr<ApplicationPositioning>> ApplicationManager::getHookedApps()
 {
     refreshRunningApps();
 	std::vector<std::shared_ptr<ApplicationPositioning>> hookedApps = {};
-	for (auto const element : selectedApplications)
+	for (auto const element : hookedApplications)
 	{
         hookedApps.push_back(element);
 	}
@@ -101,6 +112,7 @@ std::vector<std::shared_ptr<ApplicationPositioning>> ApplicationManager::getHook
 	return hookedApps;
 }
 
+// Everything down here is observerpattern
 void ApplicationManager::notify()
 {
 	for (auto element : _observers)
