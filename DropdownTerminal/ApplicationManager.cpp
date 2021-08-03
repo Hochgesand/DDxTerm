@@ -2,8 +2,10 @@
 
 #include <future>
 #include <memory>
-#include <KeyboardHook.h>
 #include <WindowGrabber.h>
+#include <algorithm>
+
+#include "AppManagerObserver.h"
 
 ApplicationManager::ApplicationManager()
 {
@@ -12,39 +14,107 @@ ApplicationManager::ApplicationManager()
 
 void ApplicationManager::refreshRunningApps()
 {
-    openApplications = WindowGrabber::get_open_windows_applications();
+    openApplications = WindowGrabber::getOpenWindowsApplications();
+    for (auto& selected_application : selectedApplications)
+    {
+	    if (*selected_application->getTerminator() == false)
+	    {
+            deselectTerm(selected_application->getApplicationHook()->getApplicationInformation()->getAppName());
+	    }
+    }
 }
 
 // dd steht nicht für DOPPEL D sondern für DropDown
-void ApplicationManager::select_application_for_dd(std::string app_name)
+void ApplicationManager::select_application_for_dd(std::string app_name, unsigned int hotkey, unsigned int modHotkey)
 {
-    terminator = true;
-    for (auto element : openApplications)
+    for (auto const element : *openApplications)
     {
         if (element.second == app_name)
-        {
-            selectedApplication = std::make_unique<ApplicationPositioning>(Application_Hook(element.first, element.second));
-            selectedApplication->hotkey_handle = std::async(
-                std::launch::async,
-                register_hotkey_with_method,
-                0x42,
-                [&] { selectedApplication->toggle_terminal(); },
-                &terminator
-            );
+        {        	
+            selectedApplications.push_back(std::make_shared<ApplicationPositioning>(Application_Hook(element.first, element.second), hotkey, modHotkey));
+            notify();
+            break;
         }
     }
 }
 
-std::map<HWND, std::string> ApplicationManager::getOpenApps()
+std::shared_ptr<std::map<HWND, std::string>> ApplicationManager::getOpenApps()
 {
-    return std::map<HWND, std::string>(openApplications);
+    return openApplications;
+}
+
+void ApplicationManager::eraseSelectedApplication(std::shared_ptr<ApplicationPositioning> element)
+{
+    selectedApplications.erase(
+        std::remove(selectedApplications.begin(), selectedApplications.end(), element),
+        selectedApplications.end()
+    );
+}
+
+void ApplicationManager::deselectTerm(std::string appname)
+{
+	for (auto element : selectedApplications)
+	{
+		if(element == nullptr)
+		{
+            eraseSelectedApplication(element);
+			continue;
+		}
+		if (element->getApplicationHook()->getApplicationInformation()->getAppName() == appname)
+		{
+            element->dropTerminal();
+            element->unfocusApplication();
+            element->terminate();
+            eraseSelectedApplication(element);
+            break;
+		}
+	}
+    notify();
 }
 
 void ApplicationManager::deselectTerm()
 {
-    terminator = false;
-    if (selectedApplication != nullptr)
+    for (auto element : selectedApplications)
     {
-        selectedApplication->unfocus_application();
+	    if (element == nullptr)
+	    {
+		    continue;
+	    }
+        element->dropTerminal();
+        element->unfocusApplication();
+        element->terminate();
     }
+    selectedApplications.clear();
+    notify();
 }
+
+std::vector<std::string> ApplicationManager::getHookedApps()
+{
+    refreshRunningApps();
+	std::vector<std::string> hookedApps;
+	for (auto& element : selectedApplications)
+	{
+		hookedApps.push_back(element->getApplicationHook()->getApplicationInformation()->getAppName());
+	}
+    
+	return hookedApps;
+}
+
+void ApplicationManager::notify()
+{
+	for (auto element : observers_)
+	{
+        element->Update();
+	}
+}
+
+void ApplicationManager::attach(AppManagerObserver* amo)
+{
+	observers_.push_back(amo);
+}
+
+void ApplicationManager::detach(AppManagerObserver* amo)
+{
+	observers_.erase(std::remove(observers_.begin(), observers_.end(), amo), observers_.end());
+}
+

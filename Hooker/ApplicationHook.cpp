@@ -5,17 +5,17 @@ Application_Hook::Application_Hook() = default;
 Application_Hook::Application_Hook(const HWND hwnd, std::string appname)
 {
 	terminal_ = HookedWindow(hwnd, appname);
-	GetWindowRect(terminal_.get_hwnd(), &terminal_pos_);
+	GetWindowRect(terminal_.getHwnd(), &terminal_pos_);
 }
 
-long Application_Hook::calc_rect_height() const
+long Application_Hook::calcRectHeight() const
 {
 	return terminal_pos_.bottom - terminal_pos_.top;
 }
 
-void Application_Hook::refresh_terminal_position()
+void Application_Hook::refreshTerminalPosition()
 {
-	GetWindowRect(terminal_.get_hwnd(), &terminal_pos_);
+	GetWindowRect(terminal_.getHwnd(), &terminal_pos_);
 }
 
 RECT* Application_Hook::getApplicationRect()

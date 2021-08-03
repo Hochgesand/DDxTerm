@@ -2,16 +2,18 @@
 
 #include <iostream>
 
-void register_hotkey_with_method(UINT button, const std::function<void()> function_on_hotkey, bool* running)
+void registerHotkeyWithMethod(UINT button, UINT modButton, const std::function<void()> function_on_hotkey, bool* running)
 {
 	if (RegisterHotKey(
 		nullptr,
 		1,
-		MOD_ALT,
+		modButton,
 		button))
 	{} else
 	{
+		*running = false;
 		MessageBox(nullptr, "The hotkey is presumably already used by another Program.", "Oopsie Woopsie", MB_OK | MB_ICONERROR);
+		return;
 	}
 
 	MSG msg;

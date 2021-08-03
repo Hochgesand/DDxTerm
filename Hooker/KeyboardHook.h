@@ -2,4 +2,4 @@
 #include <functional>
 #include <Windows.h>
 
-__declspec(dllexport) void register_hotkey_with_method(UINT, std::function<void()>, bool* running);
+__declspec(dllexport) void registerHotkeyWithMethod(UINT, UINT, std::function<void()>, bool* running);

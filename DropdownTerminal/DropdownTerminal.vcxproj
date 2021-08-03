@@ -172,8 +172,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ApplicationManager.h" />
+    <ClInclude Include="AppManagerObserver.h" />
     <ClInclude Include="fApp.h" />
     <ClInclude Include="fMainFrame.h" />
+    <ClInclude Include="HotkeyDefs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

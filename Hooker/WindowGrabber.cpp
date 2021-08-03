@@ -5,7 +5,7 @@
 
 #include "HookedWindow.h"
 
-std::map<HWND, std::string> open_windows;
+std::map<HWND, std::string> openWindows;
 
 BOOL CALLBACK enumWindowCallback(HWND hWnd, LPARAM lparam) {
 	const int length = GetWindowTextLength(hWnd);
@@ -14,16 +14,16 @@ BOOL CALLBACK enumWindowCallback(HWND hWnd, LPARAM lparam) {
 
     // List visible windows with a non-empty title
     if (IsWindowVisible(hWnd) && length != 0) {
-        const std::unique_ptr<HookedWindow> foundWindow = std::make_unique<HookedWindow>(HookedWindow(hWnd, buffer));
-        open_windows.insert({ foundWindow->get_hwnd(), foundWindow->get_app_name() });
+        const std::shared_ptr<HookedWindow> foundWindow = std::make_shared<HookedWindow>(HookedWindow(hWnd, buffer));
+        openWindows.insert({ foundWindow->getHwnd(), foundWindow->getAppName() });
     }
     free(buffer);
     return TRUE;
 }
 
-std::map<HWND, std::string> WindowGrabber::get_open_windows_applications() {
-    open_windows = {};
+std::shared_ptr<std::map<HWND, std::string>> WindowGrabber::getOpenWindowsApplications() {
+    openWindows = {};
     EnumWindows(enumWindowCallback, NULL);
-    return open_windows;
+    return std::make_shared<std::map<HWND, std::string>>(openWindows);
 }
 

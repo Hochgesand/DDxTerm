@@ -13,6 +13,6 @@ private:
 	fMainFrame* m_frame1 = nullptr;
 
 public:
-	virtual bool OnInit();
+	bool OnInit() override;
 };
 
