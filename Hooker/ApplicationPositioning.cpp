@@ -5,13 +5,14 @@
 
 ApplicationPositioning::ApplicationPositioning() = default;
 
-ApplicationPositioning::ApplicationPositioning(Application_Hook application_hook, UINT hotkey)
+ApplicationPositioning::ApplicationPositioning(Application_Hook application_hook, UINT hotkey, UINT modHotkey)
 {
 	application_hook_ = (std::make_unique<Application_Hook>(application_hook));
 	hotkeyHandle = std::async(
 		std::launch::async,
 		registerHotkeyWithMethod,
 		hotkey,
+		modHotkey,
 		[&] { toggle_terminal(); },
 		getTerminator()
 	);

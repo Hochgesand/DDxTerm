@@ -11,7 +11,7 @@ wxBEGIN_EVENT_TABLE(fMainFrame, wxFrame)
 wxEND_EVENT_TABLE()
 
 fMainFrame::fMainFrame() :
-wxFrame(nullptr, 420, "DDxTerm", wxDefaultPosition, wxSize(1000, 200)),
+wxFrame(nullptr, 420, "DDxTerm", wxDefaultPosition, wxSize(600, 200)),
 AppManagerObserver(std::make_unique<ApplicationManager>(ApplicationManager()))
 {
 	panel = new wxPanel(this, -1);
@@ -21,13 +21,14 @@ AppManagerObserver(std::make_unique<ApplicationManager>(ApplicationManager()))
 	openAppsPtr = getAppManager()->getOpenApps();
 
 	openAppsText = new wxStaticText(panel, wxID_ANY,"Open Applications: ", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE_HORIZONTAL);
-	m_combo_box1 = new wxComboBox(panel, 501, "select one", wxDefaultPosition, wxSize(300, 25));
-	m_hotkey_control = new wxComboBox(panel, wxID_ANY, "select hotkey", wxDefaultPosition, wxSize(300, 25));
+	mComboboxOpenApps = new wxComboBox(panel, 501, "select one", wxDefaultPosition, wxSize(200, 25));
+	mHotkeyModifier = new wxComboBox(panel, wxID_ANY, "mod hotkey", wxDefaultPosition, wxSize(50, 25));
+	m_hotkey_control = new wxComboBox(panel, wxID_ANY, "select hotkey", wxDefaultPosition, wxSize(50, 25));
 	m_button = new wxButton(panel, 1337, "HOOK");
 
 	for (auto open_apps_string_arr : *openAppsPtr)
 	{
-		m_combo_box1->Append(open_apps_string_arr.second);
+		mComboboxOpenApps->Append(open_apps_string_arr.second);
 	}
 
 	for (auto open_app : HOTKEYS)
@@ -35,8 +36,14 @@ AppManagerObserver(std::make_unique<ApplicationManager>(ApplicationManager()))
 		m_hotkey_control->Append(open_app.first);
 	}
 
+	for (auto elem : KEYMODS)
+	{
+		mHotkeyModifier->Append(elem.first);
+	}
+
 	hbox1->Add(openAppsText, 1);
-	hbox1->Add(m_combo_box1, 1);
+	hbox1->Add(mComboboxOpenApps, 1);
+	hbox1->Add(mHotkeyModifier, 1);
 	hbox1->Add(m_hotkey_control, 1);
 	hbox1->Add(m_button, 1);
 	
@@ -91,22 +98,32 @@ void fMainFrame::Update()
 void fMainFrame::OnHookButtonPressed(wxCommandEvent& evt)
 {
 	uint32_t tempHotkey = 0xFF;
-	auto getval = m_hotkey_control->GetValue().ToStdString();
-	for (auto hotkeys : HOTKEYS)
+	uint32_t tempModHotkey = 0xFF;
+	auto getValHotkey = m_hotkey_control->GetValue().ToStdString();
+	auto getValModHotkey = mHotkeyModifier->GetValue().ToStdString();
+	for (auto hotkey : HOTKEYS)
 	{
-		if (hotkeys.first == getval)
+		if (hotkey.first == getValHotkey)
 		{
-			tempHotkey = hotkeys.second;
+			tempHotkey = hotkey.second;
 			break;
 		}
 	}
-	if (tempHotkey == 0xFF)
+	for (auto hotkey : KEYMODS)
 	{
-		MessageBox(nullptr, L"No hotkey selected", L"Oopsie Woopsie", MB_OK | MB_ICONERROR);
+		if (hotkey.first == getValModHotkey)
+		{
+			tempModHotkey = hotkey.second;
+			break;
+		}
+	}
+	if (tempHotkey == 0xFF || tempModHotkey == 0xFF)
+	{
+		MessageBox(nullptr, L"Modkey and hotkey need to be selected", L"Oopsie Woopsie", MB_OK | MB_ICONERROR);
 		return;
 	}
 	
-	getAppManager()->select_application_for_dd(m_combo_box1->GetValue().ToStdString(), tempHotkey);
+	getAppManager()->select_application_for_dd(mComboboxOpenApps->GetValue().ToStdString(), tempHotkey, tempModHotkey);
 }
 
 void fMainFrame::OnUnhookButtonPressed(wxCommandEvent& evt)
@@ -126,9 +143,9 @@ void fMainFrame::OnClose(wxCloseEvent& evt)
 
 void fMainFrame::OnAppComboboxOpen(wxCommandEvent& evt)
 {
-	m_combo_box1->Clear();
+	mComboboxOpenApps->Clear();
 	for (auto open_apps_string_arr : *openAppsPtr)
 	{
-		m_combo_box1->Append(open_apps_string_arr.second);
+		mComboboxOpenApps->Append(open_apps_string_arr.second);
 	}
 }

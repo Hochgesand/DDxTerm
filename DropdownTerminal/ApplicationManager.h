@@ -13,7 +13,7 @@ class ApplicationManager
 public:
     ApplicationManager();
     void refreshRunningApps();
-    void select_application_for_dd(std::string, unsigned int hotkey);
+    void select_application_for_dd(std::string, unsigned int hotkey, unsigned int modHotkey);
     void deselectTerm(std::string);
     void deselectTerm();
     void notify();

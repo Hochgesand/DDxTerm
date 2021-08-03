@@ -2,12 +2,12 @@
 
 #include <iostream>
 
-void registerHotkeyWithMethod(UINT button, const std::function<void()> function_on_hotkey, bool* running)
+void registerHotkeyWithMethod(UINT button, UINT modButton, const std::function<void()> function_on_hotkey, bool* running)
 {
 	if (RegisterHotKey(
 		nullptr,
 		1,
-		MOD_ALT,
+		modButton,
 		button))
 	{} else
 	{

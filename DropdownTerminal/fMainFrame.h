@@ -14,9 +14,10 @@ public:
 	~fMainFrame();
 
 public:
-	wxComboBox* m_combo_box1 = nullptr;
+	wxComboBox* mComboboxOpenApps = nullptr;
 	wxStaticText* openAppsText = nullptr;
 	wxComboBox* m_hotkey_control = nullptr;
+	wxComboBox* mHotkeyModifier = nullptr;
 	wxButton* m_button = nullptr;
 	wxBoxSizer* main_vbox;
 	std::shared_ptr<std::map<HWND, std::string>> openAppsPtr;
