@@ -14,16 +14,16 @@ BOOL CALLBACK enumWindowCallback(HWND hWnd, LPARAM lparam) {
 
     // List visible windows with a non-empty title
     if (IsWindowVisible(hWnd) && length != 0) {
-        const std::unique_ptr<HookedWindow> foundWindow = std::make_unique<HookedWindow>(HookedWindow(hWnd, buffer));
+        const std::shared_ptr<HookedWindow> foundWindow = std::make_shared<HookedWindow>(HookedWindow(hWnd, buffer));
         openWindows.insert({ foundWindow->getHwnd(), foundWindow->getAppName() });
     }
     free(buffer);
     return TRUE;
 }
 
-std::map<HWND, std::string> WindowGrabber::getOpenWindowsApplications() {
+std::shared_ptr<std::map<HWND, std::string>> WindowGrabber::getOpenWindowsApplications() {
     openWindows = {};
     EnumWindows(enumWindowCallback, NULL);
-    return openWindows;
+    return std::make_shared<std::map<HWND, std::string>>(openWindows);
 }
 

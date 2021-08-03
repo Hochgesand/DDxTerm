@@ -6,9 +6,9 @@
 class ApplicationManager
 {
     std::vector<class AppManagerObserver*> observers_;
-    std::map<HWND, std::string> openApplications;
-    std::vector<std::unique_ptr<ApplicationPositioning>> selectedApplications;
-    void eraseSelectedApplication(std::unique_ptr<ApplicationPositioning>&);
+    std::shared_ptr<std::map<HWND, std::string>> openApplications;
+    std::vector<std::shared_ptr<ApplicationPositioning>> selectedApplications;
+    void eraseSelectedApplication(std::shared_ptr<ApplicationPositioning>);
 
 public:
     ApplicationManager();
@@ -19,7 +19,7 @@ public:
     void notify();
     void attach(AppManagerObserver* amo);
     void detach(AppManagerObserver* amo);
-    std::map<HWND, std::string>* getOpenApps();
+    std::shared_ptr<std::map<HWND, std::string>> getOpenApps();
     std::vector<std::string> getHookedApps();
 };
 

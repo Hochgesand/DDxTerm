@@ -16,20 +16,22 @@ public:
 public:
 	wxComboBox* m_combo_box1 = nullptr;
 	wxStaticText* openAppsText = nullptr;
-	wxTextCtrl* m_text_ctrl = nullptr;
+	wxComboBox* m_hotkey_control = nullptr;
 	wxButton* m_button = nullptr;
-	std::vector<wxStaticText*> open_apps_vector;
-	std::map<wxStaticText, wxButton, wxBoxSizer> hookedAppsButtonsAndText;
+	wxBoxSizer* main_vbox;
+	std::shared_ptr<std::map<HWND, std::string>> openAppsPtr;
 
-	wxBoxSizer* vbox = new wxBoxSizer(wxVERTICAL);
-	wxBoxSizer* hbox1 = new wxBoxSizer(wxHORIZONTAL);
-	wxBoxSizer* hbox2 = new wxBoxSizer(wxHORIZONTAL);
+	std::vector<wxBoxSizer*> hookedAppsLines;
+	
+	std::map<wxStaticText*, wxButton*> hookedAndShownApps;
+	
 	wxPanel* panel = nullptr;
 
 	void OnHookButtonPressed(wxCommandEvent& evt);
 	void OnUnhookButtonPressed(wxCommandEvent& evt);
 	void OnClose(wxCloseEvent& evt);
 	void Update() override;
+	void OnAppComboboxOpen(wxCommandEvent& evt);
 
 	wxDECLARE_EVENT_TABLE();
 };

@@ -27,23 +27,23 @@ void ApplicationManager::refreshRunningApps()
 // dd steht nicht für DOPPEL D sondern für DropDown
 void ApplicationManager::select_application_for_dd(std::string app_name, unsigned int hotkey)
 {
-    for (auto element : openApplications)
+    for (auto const element : *openApplications)
     {
         if (element.second == app_name)
         {        	
-            selectedApplications.push_back(std::make_unique<ApplicationPositioning>(Application_Hook(element.first, element.second), hotkey));
+            selectedApplications.push_back(std::make_shared<ApplicationPositioning>(Application_Hook(element.first, element.second), hotkey));
             notify();
             break;
         }
     }
 }
 
-std::map<HWND, std::string>* ApplicationManager::getOpenApps()
+std::shared_ptr<std::map<HWND, std::string>> ApplicationManager::getOpenApps()
 {
-    return &openApplications;
+    return openApplications;
 }
 
-void ApplicationManager::eraseSelectedApplication(std::unique_ptr<ApplicationPositioning>& element)
+void ApplicationManager::eraseSelectedApplication(std::shared_ptr<ApplicationPositioning> element)
 {
     selectedApplications.erase(
         std::remove(selectedApplications.begin(), selectedApplications.end(), element),
@@ -53,7 +53,7 @@ void ApplicationManager::eraseSelectedApplication(std::unique_ptr<ApplicationPos
 
 void ApplicationManager::deselectTerm(std::string appname)
 {
-	for (std::unique_ptr<ApplicationPositioning>& element : selectedApplications)
+	for (std::shared_ptr<ApplicationPositioning> element : selectedApplications)
 	{
 		if(element == nullptr)
 		{
