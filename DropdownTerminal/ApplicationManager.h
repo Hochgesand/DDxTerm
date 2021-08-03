@@ -5,7 +5,7 @@
 
 class ApplicationManager
 {
-    std::vector<class AppManagerObserver*> observers_;
+    std::vector<class AppManagerObserver*> _observers;
     std::shared_ptr<std::map<HWND, std::string>> openApplications;
     std::vector<std::shared_ptr<ApplicationPositioning>> selectedApplications;
     void eraseSelectedApplication(std::shared_ptr<ApplicationPositioning>);

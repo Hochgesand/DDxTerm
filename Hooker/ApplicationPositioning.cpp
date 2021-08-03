@@ -7,13 +7,13 @@ ApplicationPositioning::ApplicationPositioning() = default;
 
 ApplicationPositioning::ApplicationPositioning(Application_Hook application_hook, UINT hotkey, UINT modHotkey)
 {
-	application_hook_ = (std::make_unique<Application_Hook>(application_hook));
+	_applicationHook = (std::make_unique<Application_Hook>(application_hook));
 	hotkeyHandle = std::async(
 		std::launch::async,
 		registerHotkeyWithMethod,
 		hotkey,
 		modHotkey,
-		[&] { toggle_terminal(); },
+		[&] { toggleTerminal(); },
 		getTerminator()
 	);
 }
@@ -29,19 +29,19 @@ double ApplicationPositioning::calcDrop(const double x, const double k)
 
 void ApplicationPositioning::dropTerminal()
 {
-	application_hook_->refreshTerminalPosition();
-	const long oldPositionY = application_hook_->getApplicationRect()->top;
+	_applicationHook->refreshTerminalPosition();
+	const long oldPositionY = _applicationHook->getApplicationRect()->top;
 	// oldPosition is equal to y in the beginning. OldPos is used for (m * x + b) calculation in the start of the while loop.
-	double y = application_hook_->getApplicationRect()->top;
+	double y = _applicationHook->getApplicationRect()->top;
 	double count = 0.0;
-	const double diff = (application_hook_->getApplicationRect()->top + 30) * -1;
+	const double diff = (_applicationHook->getApplicationRect()->top + 30) * -1;
 
 	while (y < -31.0)
 	{
 		// Essentially m * x + b where b is the old Position where the animation started and the diff is the way to go to drop the Application and x is count.
 		y = calcDrop(count, 10) * diff + oldPositionY;
 
-		movAppToPosNoResize(application_hook_->getApplicationRect()->left, static_cast<long>(y));
+		movAppToPosNoResize(_applicationHook->getApplicationRect()->left, static_cast<long>(y));
 
 		// Wait a bit or the animation is too fast
 		Sleep(animation_speed);
@@ -50,7 +50,7 @@ void ApplicationPositioning::dropTerminal()
 		count += 0.05;
 	}
 	// Grabs focus so you can type INSTANTLY
-	SetFocus(application_hook_->getApplicationInformation()->getHwnd());
+	SetFocus(_applicationHook->getApplicationInformation()->getHwnd());
 	// Maybe there is a more elegant solution. If so, make a PR :)
 	isOpen = TRUE;
 }
@@ -58,25 +58,25 @@ void ApplicationPositioning::dropTerminal()
 // Sets WindowPosition to coordinates in params
 void ApplicationPositioning::movAppToPosNoResize(const long x, const long y)
 {
-	application_hook_->refreshTerminalPosition();
-	SetWindowPos(application_hook_->getApplicationInformation()->getHwnd(),
+	_applicationHook->refreshTerminalPosition();
+	SetWindowPos(_applicationHook->getApplicationInformation()->getHwnd(),
 		HWND_TOPMOST,
 		x,
 		y,
-		application_hook_->getApplicationRect()->right - application_hook_->getApplicationRect()->left,
-		application_hook_->getApplicationRect()->bottom - application_hook_->getApplicationRect()->top,
+		_applicationHook->getApplicationRect()->right - _applicationHook->getApplicationRect()->left,
+		_applicationHook->getApplicationRect()->bottom - _applicationHook->getApplicationRect()->top,
 		NULL);
 
-	application_hook_->refreshTerminalPosition();
+	_applicationHook->refreshTerminalPosition();
 }
 
 void ApplicationPositioning::hideTerminal()
 {
-	application_hook_->refreshTerminalPosition();
-	long oldPositionY = application_hook_->getApplicationRect()->top;
+	_applicationHook->refreshTerminalPosition();
+	long oldPositionY = _applicationHook->getApplicationRect()->top;
 	double y = oldPositionY;
 	double count = 0.0;
-	const long rectHeight = application_hook_->calcRectHeight() + 50;
+	const long rectHeight = _applicationHook->calcRectHeight() + 50;
 	const double diff = rectHeight + oldPositionY + 50;
 
 
@@ -84,7 +84,7 @@ void ApplicationPositioning::hideTerminal()
 	{
 		y = calcDrop(count, -10) * diff - (rectHeight + 50);
 
-		movAppToPosNoResize(application_hook_->getApplicationRect()->left, static_cast<int>(y));
+		movAppToPosNoResize(_applicationHook->getApplicationRect()->left, static_cast<int>(y));
 
 		Sleep(animation_speed);
 
@@ -98,7 +98,7 @@ void ApplicationPositioning::hideTerminal()
 }
 
 
-void ApplicationPositioning::toggle_terminal()
+void ApplicationPositioning::toggleTerminal()
 {
 	if (isOpen)
 	{
@@ -112,13 +112,13 @@ void ApplicationPositioning::toggle_terminal()
 
 void ApplicationPositioning::unfocusApplication()
 {
-	application_hook_->refreshTerminalPosition();
-	SetWindowPos(application_hook_->getApplicationInformation()->getHwnd(),
+	_applicationHook->refreshTerminalPosition();
+	SetWindowPos(_applicationHook->getApplicationInformation()->getHwnd(),
 		HWND_NOTOPMOST,
-		application_hook_->getApplicationRect()->left,
-		application_hook_->getApplicationRect()->top,
-		application_hook_->getApplicationRect()->right - application_hook_->getApplicationRect()->left,
-		application_hook_->getApplicationRect()->bottom - application_hook_->getApplicationRect()->top,
+		_applicationHook->getApplicationRect()->left,
+		_applicationHook->getApplicationRect()->top,
+		_applicationHook->getApplicationRect()->right - _applicationHook->getApplicationRect()->left,
+		_applicationHook->getApplicationRect()->bottom - _applicationHook->getApplicationRect()->top,
 		NULL);
 }
 

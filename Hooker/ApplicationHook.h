@@ -7,7 +7,7 @@ __declspec(dllexport) void toggleTerminal();
 class __declspec(dllexport) Application_Hook
 {
 private:
-	RECT terminal_pos_{};
+	RECT terminalPos{};
 	HookedWindow terminal_;
 public:
 	Application_Hook();

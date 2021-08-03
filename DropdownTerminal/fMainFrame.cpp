@@ -15,15 +15,15 @@ AppManagerObserver(std::make_unique<ApplicationManager>(ApplicationManager())),
 wxFrame(nullptr, 420, "DDxTerm", wxDefaultPosition, wxSize(600, 200))
 {
 	panel = new wxPanel(this, -1);
-	main_vbox = new wxBoxSizer(wxVERTICAL);
+	mainVbox = new wxBoxSizer(wxVERTICAL);
 	auto hbox1 = new wxBoxSizer(wxHORIZONTAL);
 	getAppManager()->attach(this);
 
 	openAppsText = new wxStaticText(panel, wxID_ANY,"Open Applications: ", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE_HORIZONTAL);
 	mComboboxOpenApps = new wxComboBox(panel, 501, "select one", wxDefaultPosition, wxSize(200, 25));
 	mHotkeyModifier = new wxComboBox(panel, wxID_ANY, "mod hotkey", wxDefaultPosition, wxSize(50, 25));
-	m_hotkey_control = new wxComboBox(panel, wxID_ANY, "select hotkey", wxDefaultPosition, wxSize(50, 25));
-	m_button = new wxButton(panel, 1337, "HOOK");
+	mhotkeyControl = new wxComboBox(panel, wxID_ANY, "select hotkey", wxDefaultPosition, wxSize(50, 25));
+	mbutton = new wxButton(panel, 1337, "HOOK");
 
 	for (auto const open_apps_string_arr : *getAppManager()->getOpenApps())
 	{
@@ -32,7 +32,7 @@ wxFrame(nullptr, 420, "DDxTerm", wxDefaultPosition, wxSize(600, 200))
 
 	for (auto const open_app : HOTKEYS)
 	{
-		m_hotkey_control->Append(open_app.first);
+		mhotkeyControl->Append(open_app.first);
 	}
 
 	for (auto const elem : KEYMODS)
@@ -43,12 +43,12 @@ wxFrame(nullptr, 420, "DDxTerm", wxDefaultPosition, wxSize(600, 200))
 	hbox1->Add(openAppsText, 1);
 	hbox1->Add(mComboboxOpenApps, 1);
 	hbox1->Add(mHotkeyModifier, 1);
-	hbox1->Add(m_hotkey_control, 1);
-	hbox1->Add(m_button, 1);
+	hbox1->Add(mhotkeyControl, 1);
+	hbox1->Add(mbutton, 1);
 	
-	main_vbox->Add(hbox1, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
+	mainVbox->Add(hbox1, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
 
-	panel->SetSizer(main_vbox);
+	panel->SetSizer(mainVbox);
 	Centre();
 }
 
@@ -66,7 +66,7 @@ void fMainFrame::Update()
 
 	for (auto hooked_apps_line : hookedAppsLines)
 	{
-		main_vbox->Detach(hooked_apps_line);
+		mainVbox->Detach(hooked_apps_line);
 		delete hooked_apps_line;
 	}
 
@@ -87,10 +87,10 @@ void fMainFrame::Update()
 		newHbox->Add(tempText, 1, wxTOP, 10);
 		newHbox->Add(tempButton, 1, wxTOP, 10);
 		
-		main_vbox->Add(newHbox, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
+		mainVbox->Add(newHbox, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
 		counter++;
 	}
-	panel->SetSizer(main_vbox);
+	panel->SetSizer(mainVbox);
 	panel->Layout();
 }
 
@@ -98,7 +98,7 @@ void fMainFrame::OnHookButtonPressed(wxCommandEvent& evt)
 {
 	uint32_t tempHotkey = 0xFF;
 	uint32_t tempModHotkey = 0xFF;
-	const auto getValHotkey = m_hotkey_control->GetValue().ToStdString();
+	const auto getValHotkey = mhotkeyControl->GetValue().ToStdString();
 	const auto getValModHotkey = mHotkeyModifier->GetValue().ToStdString();
 	for (auto const hotkey : HOTKEYS)
 	{

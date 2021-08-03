@@ -5,11 +5,11 @@
 
 class AppManagerObserver
 {
-	std::shared_ptr<class ApplicationManager> application_manager_;
+	std::shared_ptr<class ApplicationManager> _applicationManager;
 public:
-	AppManagerObserver(std::shared_ptr<ApplicationManager> application_manager)
+	AppManagerObserver(std::shared_ptr<ApplicationManager> applicationManager)
 	{
-		application_manager_ = application_manager;
+		_applicationManager = applicationManager;
 	}
 
 	virtual void Update() = 0;
@@ -17,6 +17,6 @@ public:
 protected:
 	std::shared_ptr<class ApplicationManager> getAppManager()
 	{
-		return application_manager_;
+		return _applicationManager;
 	}
 };
