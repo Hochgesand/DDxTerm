@@ -24,6 +24,6 @@ public:
 	std::shared_ptr<Application_Hook> getApplicationHook() const;
 
 	void terminate();
-	std::shared_ptr<bool> getTerminator();
+	bool* getTerminator();
 };
 

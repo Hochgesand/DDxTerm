@@ -132,7 +132,7 @@ void ApplicationPositioning::terminate()
 	terminator = false;
 }
 
-std::shared_ptr<bool> ApplicationPositioning::getTerminator()
+bool* ApplicationPositioning::getTerminator()
 {
-	return std::make_shared<bool>(terminator);
+	return &terminator;
 }
