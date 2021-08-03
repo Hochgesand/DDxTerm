@@ -7,11 +7,11 @@
 
 class fMainFrame : public AppManagerObserver, public wxFrame
 {
+	const int offsetID = 10000;
 	
 public:
 	fMainFrame();
 	~fMainFrame();
-	void Update() override;
 
 public:
 	wxComboBox* m_combo_box1 = nullptr;
@@ -19,6 +19,7 @@ public:
 	wxTextCtrl* m_text_ctrl = nullptr;
 	wxButton* m_button = nullptr;
 	std::vector<wxStaticText*> open_apps_vector;
+	std::map<wxStaticText, wxButton, wxBoxSizer> hookedAppsButtonsAndText;
 
 	wxBoxSizer* vbox = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer* hbox1 = new wxBoxSizer(wxHORIZONTAL);
@@ -26,7 +27,9 @@ public:
 	wxPanel* panel = nullptr;
 
 	void OnHookButtonPressed(wxCommandEvent& evt);
+	void OnUnhookButtonPressed(wxCommandEvent& evt);
 	void OnClose(wxCloseEvent& evt);
+	void Update() override;
 
 	wxDECLARE_EVENT_TABLE();
 };

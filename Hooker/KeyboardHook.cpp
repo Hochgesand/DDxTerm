@@ -12,7 +12,8 @@ void registerHotkeyWithMethod(UINT button, const std::function<void()> function_
 	{} else
 	{
 		*running = false;
-		MessageBox(nullptr, "The hotkey is presumably already used by another Program.", "Oopsie Woopsie", MB_OK | MB_ICONERROR);
+		MessageBox(nullptr, L"The hotkey is presumably already used by another Program.", L"Oopsie Woopsie", MB_OK | MB_ICONERROR);
+		return;
 	}
 
 	MSG msg;

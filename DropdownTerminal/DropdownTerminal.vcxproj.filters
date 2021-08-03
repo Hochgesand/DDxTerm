@@ -38,5 +38,8 @@
     <ClInclude Include="AppManagerObserver.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="HotkeyDefs.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

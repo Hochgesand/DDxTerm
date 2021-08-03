@@ -60,11 +60,12 @@ void ApplicationManager::deselectTerm(std::string appname)
             eraseSelectedApplication(element);
 			continue;
 		}
-		if (element->getApplicationHook()->getApplicationInformation()->getAppName() == appname && !*element->getTerminator())
+		if (element->getApplicationHook()->getApplicationInformation()->getAppName() == appname)
 		{
             element->unfocusApplication();
             element->terminate();
             eraseSelectedApplication(element);
+            break;
 		}
 	}
     notify();
