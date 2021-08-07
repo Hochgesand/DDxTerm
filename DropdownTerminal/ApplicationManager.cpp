@@ -14,34 +14,33 @@ ApplicationManager::ApplicationManager()
 
 void ApplicationManager::refreshRunningApps()
 {
-	
     openApplications = WindowGrabber::getOpenWindowsApplications();
     for (auto& selectedApplication : hookedApplications)
     {
         selectedApplication->getApplicationHook()->refreshTerminalPosition();
 	    if (*selectedApplication->getTerminator() == false)
 	    {
-            deselectTerm(selectedApplication->getApplicationHook()->getApplicationInformation()->getAppName());
+            deselectTerm(selectedApplication->getApplicationHook()->getApplicationInformation()->getHwnd());
 	    }
     }
 }
 
 // dd steht nicht für DOPPEL D sondern für DropDown
-void ApplicationManager::select_application_for_dd(std::string app_name, unsigned int hotkey, unsigned int modHotkey)
+void ApplicationManager::select_application_for_dd(const HWND appHwnd, unsigned int hotkey, unsigned int modHotkey)
 {
-    for (auto const element : *openApplications)
+    for (auto [fst, snd] : *openApplications)
     {
-        if (element.second == app_name)
+        if (fst == appHwnd)
         {        	
-            hookedApplications.push_back(std::make_shared<ApplicationPositioning>(Application_Hook(element.first, element.second), hotkey, modHotkey));
+            hookedApplications.push_back(std::make_shared<ApplicationPositioning>(fst, snd, hotkey, modHotkey));
             notify();
             break;
         }
     }
 }
 
-// Gets apps which are opened in generally
-std::shared_ptr<std::map<HWND, std::string>> ApplicationManager::getOpenApps()
+// Gets apps which are opened in general
+std::shared_ptr<std::map<HWND, std::string>> ApplicationManager::getOpenApps() const
 {
     return openApplications;
 }
@@ -58,17 +57,16 @@ void ApplicationManager::eraseSelectedApplication(std::shared_ptr<ApplicationPos
 // When UNHOOKed search for ApplicationPositioning object and terminate it.
 // If its a nullpointer it shall be removed.
 // When Apps close without a UNHOOK its a nullpointer
-void ApplicationManager::deselectTerm(std::string appname)
+void ApplicationManager::deselectTerm(HWND appHwnd)
 {
-	
-	for (auto element : hookedApplications)
+	for (const auto& element : hookedApplications)
 	{
 		if(element == nullptr)
 		{
             eraseSelectedApplication(element);
 			continue;
 		}
-		if (element->getApplicationHook()->getApplicationInformation()->getAppName() == appname)
+		if (element->getApplicationHook()->getApplicationInformation()->getHwnd() == appHwnd)
 		{
             element->terminate();
             eraseSelectedApplication(element);
@@ -104,7 +102,7 @@ std::vector<std::shared_ptr<ApplicationPositioning>> ApplicationManager::getHook
 {
     refreshRunningApps();
 	std::vector<std::shared_ptr<ApplicationPositioning>> hookedApps = {};
-	for (auto const element : hookedApplications)
+	for (auto const& element : hookedApplications)
 	{
         hookedApps.push_back(element);
 	}

@@ -3,13 +3,11 @@
 
 #include <thread>
 
-ApplicationPositioning::ApplicationPositioning() = default;
-
-ApplicationPositioning::ApplicationPositioning(Application_Hook application_hook, UINT hotkey, UINT modHotkey)
+ApplicationPositioning::ApplicationPositioning(HWND appHwnd, std::string& appName, UINT hotkey, UINT modHotkey)
 {
+	_applicationHook = std::make_shared<Application_Hook>(appHwnd, appName);
 	hotkeys.push_back(modHotkey);
 	hotkeys.push_back(hotkey);
-	_applicationHook = (std::make_shared<Application_Hook>(application_hook));
 	hotkeyHandle = std::async(
 		std::launch::async,
 		registerHotkeyWithMethod,
@@ -30,9 +28,9 @@ double ApplicationPositioning::calcDrop(const double x, const double k)
 }
 
 void ApplicationPositioning::dropTerminal()
-{	
-	_applicationHook->refreshTerminalPosition();
+{
 	ShowWindow(_applicationHook->getApplicationInformation()->getHwnd(), SW_RESTORE);
+	_applicationHook->refreshTerminalPosition();
 	const long oldPositionY = _applicationHook->getApplicationRect()->top;
 	// oldPosition is equal to y in the beginning. OldPos is used for (m * x + b) calculation in the start of the while loop.
 	double y = _applicationHook->getApplicationRect()->top;
@@ -55,7 +53,7 @@ void ApplicationPositioning::dropTerminal()
 	// Grabs focus so you can type INSTANTLY
 	SetFocus(_applicationHook->getApplicationInformation()->getHwnd());
 	// Maybe there is a more elegant solution. If so, make a PR :)
-	isOpen = TRUE;
+	isOpen = true;
 }
 
 // Sets WindowPosition to coordinates in params
@@ -93,12 +91,12 @@ void ApplicationPositioning::hideTerminal()
 
 		count += 0.05;
 	}
-	ShowWindow(_applicationHook->getApplicationInformation()->getHwnd(), SW_HIDE);
+	ShowWindow(_applicationHook->getApplicationInformation()->getHwnd(), SW_MINIMIZE);
 
 	// When Application hides, it should get out of tha wheeyy
 	unfocusApplication();
 
-	isOpen = FALSE;
+	isOpen = false;
 }
 
 

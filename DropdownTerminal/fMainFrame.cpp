@@ -142,8 +142,10 @@ void fMainFrame::OnHookButtonPressed(wxCommandEvent& evt)
 		MessageBox(nullptr, L"Modkey and hotkey need to be selected", L"Oopsie Woopsie", MB_OK | MB_ICONERROR);
 		return;
 	}
+	const auto selectedItemId = mComboboxOpenApps->GetSelection();
+	const auto selectedClientData = static_cast<HWND>(mComboboxOpenApps->GetClientData(selectedItemId));
 	
-	getAppManager()->select_application_for_dd(mComboboxOpenApps->GetValue().ToStdString(), tempHotkey, tempModHotkey);
+	getAppManager()->select_application_for_dd(selectedClientData, tempHotkey, tempModHotkey);
 }
 
 // Obvious methods do obvious things down here.
@@ -159,7 +161,7 @@ void fMainFrame::OnUnhookButtonPressed(wxCommandEvent& evt)
 {
 	auto hookedApps = getAppManager()->getHookedApps();
 	const auto getButtonId = evt.GetId();
-	const auto getAppNameToClose = hookedApps.at(getButtonId - offsetID)->getApplicationHook()->getApplicationInformation()->getAppName();
+	const auto getAppNameToClose = hookedApps.at(getButtonId - offsetID)->getApplicationHook()->getApplicationInformation()->getHwnd();
 	getAppManager()->deselectTerm(getAppNameToClose);
 }
 
@@ -173,8 +175,8 @@ void fMainFrame::OnAppComboboxOpen(wxCommandEvent& evt)
 {
 	mComboboxOpenApps->Clear();
 	getAppManager()->refreshRunningApps();
-	for (auto open_apps_string_arr : *getAppManager()->getOpenApps())
+	for (auto [fst, snd] : *getAppManager()->getOpenApps())
 	{
-		mComboboxOpenApps->Append(open_apps_string_arr.second);
+		mComboboxOpenApps->Append(snd, fst);
 	}
 }

@@ -4,12 +4,11 @@
 
 void registerHotkeyWithMethod(UINT button, UINT modButton, const std::function<void()> functionOnHotkey, std::shared_ptr<bool> running)
 {
-	if (RegisterHotKey(
+	if (!RegisterHotKey(
 		nullptr,
 		1,
 		modButton,
 		button))
-	{} else
 	{
 		*running = false;
 		MessageBox(nullptr, "The hotkey is presumably already used by another Program.", "Oopsie Woopsie", MB_OK | MB_ICONERROR);
@@ -27,7 +26,7 @@ void registerHotkeyWithMethod(UINT button, UINT modButton, const std::function<v
 				functionOnHotkey();
 			}
 		}
-		if (!(*running))
+		if (!*running)
 		{
 			break;
 		}
