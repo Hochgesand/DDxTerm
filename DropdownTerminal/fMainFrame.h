@@ -3,6 +3,7 @@
 
 #include <wx/wx.h>
 
+#include "ApplicationManager.h"
 #include "AppManagerObserver.h"
 
 class fMainFrame : public AppManagerObserver, public wxFrame

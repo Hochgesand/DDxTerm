@@ -161,16 +161,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="KeyboardHook.cpp" />
+	<ClCompile Include="KeyboardHook.cpp" />
     <ClCompile Include="ApplicationHook.cpp" />
-    <ClCompile Include="ApplicationPositioning.cpp" />
+    <ClCompile Include="ApplicationPositioner.cpp" />
     <ClCompile Include="WindowGrabber.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="KeyboardHook.h" />
     <ClInclude Include="ApplicationHook.h" />
     <ClInclude Include="HookedWindow.h" />
-    <ClInclude Include="ApplicationPositioning.h" />
+    <ClInclude Include="ApplicationPositioner.h" />
     <ClInclude Include="WindowGrabber.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

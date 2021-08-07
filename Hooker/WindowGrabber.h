@@ -1,13 +1,15 @@
 #pragma once
 
-#include <map>
 #include <memory>
-#include <string>
+#include <vector>
 #include <Windows.h>
+
+#include "HookedWindow.h"
 
 class __declspec(dllexport) WindowGrabber
 {
 public:
-	static std::shared_ptr<std::map<HWND, std::string>> getOpenWindowsApplications();
+	static std::shared_ptr<std::vector<std::shared_ptr<HookedWindow>>> getOpenWindowsApplications();
+	static std::shared_ptr<std::vector<std::shared_ptr<RECT>>> getDesktopsRectRelative();
 };
 

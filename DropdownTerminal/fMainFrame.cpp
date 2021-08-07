@@ -12,13 +12,12 @@ wxBEGIN_EVENT_TABLE(fMainFrame, wxFrame)
 wxEND_EVENT_TABLE()
 
 fMainFrame::fMainFrame() :
-AppManagerObserver(std::make_unique<ApplicationManager>(ApplicationManager())),
+AppManagerObserver(std::make_shared<ApplicationManager>(ApplicationManager())),
 wxFrame(nullptr, 420, "DDxTerm", wxDefaultPosition, wxSize(600, 200))
 {
 	panel = new wxPanel(this, -1);
 	mainVbox = new wxBoxSizer(wxVERTICAL);
 	auto hbox1 = new wxBoxSizer(wxHORIZONTAL);
-	getAppManager()->attach(this);
 
 	openAppsText = new wxStaticText(panel, wxID_ANY,"Open Applications: ", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE_HORIZONTAL);
 	mComboboxOpenApps = new wxComboBox(panel, 501, "select one", wxDefaultPosition, wxSize(200, 25));
@@ -27,19 +26,19 @@ wxFrame(nullptr, 420, "DDxTerm", wxDefaultPosition, wxSize(600, 200))
 	mbutton = new wxButton(panel, 1337, "HOOK");
 	mbuttonRefresh = new wxButton(panel, 1338, "reload pos");
 
-	for (auto const open_apps_string_arr : *getAppManager()->getOpenApps())
+	for (auto const& open_apps_string_arr : *getAppManager()->getOpenApps())
 	{
-		mComboboxOpenApps->Append(open_apps_string_arr.second);
+		mComboboxOpenApps->Append(open_apps_string_arr->getAppName());
 	}
 
-	for (auto const open_app : HOTKEYS)
+	for (auto [fst, snd] : HOTKEYS)
 	{
-		mhotkeyControl->Append(open_app.first);
+		mhotkeyControl->Append(fst);
 	}
 
-	for (auto const elem : KEYMODS)
+	for (auto [fst, snd] : KEYMODS)
 	{
-		mHotkeyModifier->Append(elem.first);
+		mHotkeyModifier->Append(fst);
 	}
 
 	hbox1->Add(openAppsText, 1);
@@ -175,8 +174,8 @@ void fMainFrame::OnAppComboboxOpen(wxCommandEvent& evt)
 {
 	mComboboxOpenApps->Clear();
 	getAppManager()->refreshRunningApps();
-	for (auto [fst, snd] : *getAppManager()->getOpenApps())
+	for (auto elem : *getAppManager()->getOpenApps())
 	{
-		mComboboxOpenApps->Append(snd, fst);
+		mComboboxOpenApps->Append(elem->getAppName(), elem->getHwnd());
 	}
 }
