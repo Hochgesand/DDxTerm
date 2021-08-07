@@ -4,26 +4,27 @@ Application_Hook::Application_Hook() = default;
 
 Application_Hook::Application_Hook(const HWND hwnd, std::string appname)
 {
-	terminal_ = HookedWindow(hwnd, appname);
-	GetWindowRect(terminal_.getHwnd(), &terminalPos);
+	terminal_ = std::make_shared<HookedWindow>(hwnd, appname);
+	terminalPos = std::make_shared<RECT>();
+	refreshTerminalPosition();
 }
 
 long Application_Hook::calcRectHeight() const
 {
-	return terminalPos.bottom - terminalPos.top;
+	return terminalPos->bottom - terminalPos->top;
 }
 
-void Application_Hook::refreshTerminalPosition()
+void Application_Hook::refreshTerminalPosition() const
 {
-	GetWindowRect(terminal_.getHwnd(), &terminalPos);
+	GetWindowRect(terminal_->getHwnd(), terminalPos.get());
 }
 
-std::shared_ptr<RECT> Application_Hook::getApplicationRect()
+std::shared_ptr<RECT> Application_Hook::getApplicationRect() const
 {
-	return std::make_shared<RECT>(terminalPos);
+	return terminalPos;
 }
 
-std::shared_ptr<HookedWindow> Application_Hook::getApplicationInformation()
+std::shared_ptr<HookedWindow> Application_Hook::getApplicationInformation() const
 {
-	return std::make_shared<HookedWindow>(terminal_);
+	return terminal_;
 }

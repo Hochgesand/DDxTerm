@@ -3,11 +3,11 @@
 
 #include <thread>
 
-ApplicationPositioning::ApplicationPositioning() = default;
-
-ApplicationPositioning::ApplicationPositioning(Application_Hook application_hook, UINT hotkey, UINT modHotkey)
+ApplicationPositioning::ApplicationPositioning(HWND appHwnd, std::string& appName, UINT hotkey, UINT modHotkey)
 {
-	_applicationHook = (std::make_shared<Application_Hook>(application_hook));
+	_applicationHook = std::make_shared<Application_Hook>(appHwnd, appName);
+	hotkeys.push_back(modHotkey);
+	hotkeys.push_back(hotkey);
 	hotkeyHandle = std::async(
 		std::launch::async,
 		registerHotkeyWithMethod,
@@ -29,14 +29,15 @@ double ApplicationPositioning::calcDrop(const double x, const double k)
 
 void ApplicationPositioning::dropTerminal()
 {
+	ShowWindow(_applicationHook->getApplicationInformation()->getHwnd(), SW_RESTORE);
 	_applicationHook->refreshTerminalPosition();
 	const long oldPositionY = _applicationHook->getApplicationRect()->top;
 	// oldPosition is equal to y in the beginning. OldPos is used for (m * x + b) calculation in the start of the while loop.
 	double y = _applicationHook->getApplicationRect()->top;
 	double count = 0.0;
-	const double diff = (_applicationHook->getApplicationRect()->top + 30) * -1;
+	const double diff = (-1 * hookedAppOffset + _applicationHook->getApplicationRect()->top) * -1;
 
-	while (y < -31.0)
+	while (y < -1 + hookedAppOffset)
 	{
 		// Essentially m * x + b where b is the old Position where the animation started and the diff is the way to go to drop the Application and x is count.
 		y = calcDrop(count, 10) * diff + oldPositionY;
@@ -52,11 +53,11 @@ void ApplicationPositioning::dropTerminal()
 	// Grabs focus so you can type INSTANTLY
 	SetFocus(_applicationHook->getApplicationInformation()->getHwnd());
 	// Maybe there is a more elegant solution. If so, make a PR :)
-	isOpen = TRUE;
+	isOpen = true;
 }
 
 // Sets WindowPosition to coordinates in params
-void ApplicationPositioning::movAppToPosNoResize(const long x, const long y)
+void ApplicationPositioning::movAppToPosNoResize(const long x, const long y) const
 {
 	_applicationHook->refreshTerminalPosition();
 	SetWindowPos(_applicationHook->getApplicationInformation()->getHwnd(),
@@ -90,11 +91,12 @@ void ApplicationPositioning::hideTerminal()
 
 		count += 0.05;
 	}
+	ShowWindow(_applicationHook->getApplicationInformation()->getHwnd(), SW_MINIMIZE);
 
 	// When Application hides, it should get out of tha wheeyy
 	unfocusApplication();
 
-	isOpen = FALSE;
+	isOpen = false;
 }
 
 
@@ -110,7 +112,7 @@ void ApplicationPositioning::toggleTerminal()
 	}
 }
 
-void ApplicationPositioning::unfocusApplication()
+void ApplicationPositioning::unfocusApplication() const
 {
 	_applicationHook->refreshTerminalPosition();
 	SetWindowPos(_applicationHook->getApplicationInformation()->getHwnd(),
@@ -122,6 +124,11 @@ void ApplicationPositioning::unfocusApplication()
 		NULL);
 }
 
+std::vector<uint32_t> ApplicationPositioning::getSelectedHotkeys() const
+{
+	return hotkeys;
+}
+
 std::shared_ptr<Application_Hook> ApplicationPositioning::getApplicationHook() const
 {
 	return _applicationHook;
@@ -129,10 +136,13 @@ std::shared_ptr<Application_Hook> ApplicationPositioning::getApplicationHook() c
 
 void ApplicationPositioning::terminate()
 {
-	terminator = false;
+	hookedAppOffset = 0;
+	dropTerminal();
+	unfocusApplication();
+	*terminator = false;
 }
 
-bool* ApplicationPositioning::getTerminator()
+std::shared_ptr<bool> ApplicationPositioning::getTerminator() const
 {
-	return &terminator;
+	return terminator;
 }
