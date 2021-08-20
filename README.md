@@ -27,5 +27,5 @@ he explains pretty good how to setup wxWidgets, you only need to watch from 12:2
     
 2. When you're all setup just open the solution in the git root folder and it should just work.
 
-If you have any questions just E-Mail me @ a@andrevr.de or open an issue.
+If you have any questions just E-Mail me @ a(at)andrevr.de or open an issue.
 
