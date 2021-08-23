@@ -43,8 +43,10 @@ long ApplicationPositioner::getHightestPointInCurrentMonitor()
 	for (const auto monitors_rel_po : *monitorsRelPos)
 	{
 		auto appTop = _applicationHook->getApplicationRect()->top;
-		auto monitorTop = monitors_rel_po->bottom;
-		if (appTop <= monitorTop)
+		auto monitorBottom = monitors_rel_po->bottom;
+		if (appTop <= monitorBottom && 
+			_applicationHook->getApplicationRect()->left >= monitors_rel_po->left && 
+			_applicationHook->getApplicationRect()->right <= monitors_rel_po->right)
 		{
 			getHighestMonitor = monitors_rel_po->top;
 		}
@@ -93,6 +95,7 @@ void ApplicationPositioner::dropTerminal()
 
 void ApplicationPositioner::hideTerminal()
 {
+	hookedAppOffset = getHightestPointInCurrentMonitor();
 	auto terminalHwnd = _applicationHook->getApplicationInformation()->getHwnd();
 	_applicationHook->refreshTerminalPosition();
 	long oldPositionY = _applicationHook->getApplicationRect()->top;

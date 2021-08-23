@@ -81,7 +81,6 @@ void ApplicationManager::deselectTerm(HWND appHwnd)
 // if it finds nullpointer if just skips them.
 void ApplicationManager::deselectTerms()
 {
-	
     for (auto element : hookedApplications)
     {
 	    if (element == nullptr)
@@ -126,4 +125,3 @@ void ApplicationManager::detach(AppManagerObserver* amo)
 {
 	_observers.erase(std::remove(_observers.begin(), _observers.end(), amo), _observers.end());
 }
-
