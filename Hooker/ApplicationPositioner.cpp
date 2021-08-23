@@ -77,7 +77,7 @@ void ApplicationPositioner::dropTerminal()
 		// Essentially m * x + b where b is the old Position where the animation started and the diff is the way to go to drop the Application and x is count.
 		y = calcDrop(count, 10, 0.5) * diff + oldPositionY;
 
-		movAppToPosNoResize(_applicationHook->getApplicationRect()->left, static_cast<long>(y));
+		moveAppToPosNoResize(_applicationHook->getApplicationRect()->left, static_cast<long>(y));
 
 		// Wait a bit or the animation is too fast
 		Sleep(animation_speed);
@@ -106,7 +106,7 @@ void ApplicationPositioner::hideTerminal()
 	{
 		y = calcDrop(count, -10, 0.5) * diff - (rectHeight + 50);
 
-		movAppToPosNoResize(_applicationHook->getApplicationRect()->left, static_cast<int>(y));
+		moveAppToPosNoResize(_applicationHook->getApplicationRect()->left, static_cast<int>(y));
 
 		Sleep(animation_speed);
 
@@ -122,7 +122,7 @@ void ApplicationPositioner::hideTerminal()
 }
 
 // Sets WindowPosition to coordinates in params
-void ApplicationPositioner::movAppToPosNoResize(const long x, const long y) const
+void ApplicationPositioner::moveAppToPosNoResize(const long x, const long y) const
 {
 	_applicationHook->refreshTerminalPosition();
 	SetWindowPos(_applicationHook->getApplicationInformation()->getHwnd(),
