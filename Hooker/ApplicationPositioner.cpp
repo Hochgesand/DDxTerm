@@ -7,8 +7,8 @@
 
 ApplicationPositioner::ApplicationPositioner(HWND appHwnd, std::string appName, UINT hotkey, UINT modHotkey)
 {
-	hookedAppOffset = getHightestPointInFullDesktop();
 	_applicationHook = std::make_shared<Application_Hook>(appHwnd, appName);
+	hookedAppOffset = getHightestPointInCurrentMonitor();
 	hotkeys.push_back(modHotkey);
 	hotkeys.push_back(hotkey);
 	hotkeyHandle = std::async(
@@ -23,17 +23,35 @@ ApplicationPositioner::ApplicationPositioner(HWND appHwnd, std::string appName, 
 
 long ApplicationPositioner::getHightestPointInFullDesktop()
 {
-	long getHighestMonitor = -1000000;
+	long getHighestMonitor = 10000000;
 	auto monitorsRelPos = WindowGrabber::getDesktopsRectRelative();
-	for (auto monitors_rel_po : *monitorsRelPos)
+	for (const auto& monitors_rel_po : *monitorsRelPos)
 	{
-		if (monitors_rel_po->top > getHighestMonitor)
+		if (monitors_rel_po->top < getHighestMonitor)
 		{
 			getHighestMonitor = monitors_rel_po->top;
 		}
 	}
 	return getHighestMonitor;
 }
+
+long ApplicationPositioner::getHightestPointInCurrentMonitor()
+{
+	long getHighestMonitor = 10000000;
+	const auto monitorsRelPos = WindowGrabber::getDesktopsRectRelative();
+	_applicationHook->refreshTerminalPosition();
+	for (const auto monitors_rel_po : *monitorsRelPos)
+	{
+		auto appTop = _applicationHook->getApplicationRect()->top;
+		auto monitorTop = monitors_rel_po->bottom;
+		if (appTop <= monitorTop)
+		{
+			getHighestMonitor = monitors_rel_po->top;
+		}
+	}
+	return getHighestMonitor;
+}
+
 
 // If x0 == 0.5 and k == 10 the function will return values between 0 and 1 as double
 // If k == -10 the function is reversed.
@@ -73,21 +91,6 @@ void ApplicationPositioner::dropTerminal()
 	isOpen = true;
 }
 
-// Sets WindowPosition to coordinates in params
-void ApplicationPositioner::movAppToPosNoResize(const long x, const long y) const
-{
-	_applicationHook->refreshTerminalPosition();
-	SetWindowPos(_applicationHook->getApplicationInformation()->getHwnd(),
-		HWND_TOPMOST,
-		x,
-		y,
-		_applicationHook->getApplicationRect()->right - _applicationHook->getApplicationRect()->left,
-		_applicationHook->getApplicationRect()->bottom - _applicationHook->getApplicationRect()->top,
-		NULL);
-
-	_applicationHook->refreshTerminalPosition();
-}
-
 void ApplicationPositioner::hideTerminal()
 {
 	auto terminalHwnd = _applicationHook->getApplicationInformation()->getHwnd();
@@ -95,8 +98,8 @@ void ApplicationPositioner::hideTerminal()
 	long oldPositionY = _applicationHook->getApplicationRect()->top;
 	double y = oldPositionY;
 	double count = 0.0;
-	const long rectHeight = _applicationHook->calcRectHeight() + 50;
-	const double diff = rectHeight + oldPositionY + 50;
+	const long rectHeight = _applicationHook->calcRectHeight() - getHightestPointInFullDesktop();
+	const double diff = rectHeight + oldPositionY;
 
 
 	while (y > rectHeight * -1 + 1)
@@ -118,6 +121,20 @@ void ApplicationPositioner::hideTerminal()
 	isOpen = false;
 }
 
+// Sets WindowPosition to coordinates in params
+void ApplicationPositioner::movAppToPosNoResize(const long x, const long y) const
+{
+	_applicationHook->refreshTerminalPosition();
+	SetWindowPos(_applicationHook->getApplicationInformation()->getHwnd(),
+		HWND_TOPMOST,
+		x,
+		y,
+		_applicationHook->getApplicationRect()->right - _applicationHook->getApplicationRect()->left,
+		_applicationHook->getApplicationRect()->bottom - _applicationHook->getApplicationRect()->top,
+		NULL);
+
+	_applicationHook->refreshTerminalPosition();
+}
 
 void ApplicationPositioner::toggleTerminal()
 {

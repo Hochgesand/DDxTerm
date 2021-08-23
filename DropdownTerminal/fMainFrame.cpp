@@ -18,6 +18,7 @@ wxFrame(nullptr, 420, "DDxTerm", wxDefaultPosition, wxSize(600, 200))
 	panel = new wxPanel(this, -1);
 	mainVbox = new wxBoxSizer(wxVERTICAL);
 	auto hbox1 = new wxBoxSizer(wxHORIZONTAL);
+	getAppManager()->attach(this);
 
 	openAppsText = new wxStaticText(panel, wxID_ANY,"Open Applications: ", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE_HORIZONTAL);
 	mComboboxOpenApps = new wxComboBox(panel, 501, "select one", wxDefaultPosition, wxSize(200, 25));

@@ -26,9 +26,10 @@ BOOL CALLBACK Monitorenumproc(
     LPRECT lprect,
     LPARAM lparam
 ) {
-	const std::unique_ptr<MONITORINFOEX> monitorinfo = std::make_unique<MONITORINFOEX>();
+	const std::shared_ptr<MONITORINFOEX> monitorinfo = std::make_shared<MONITORINFOEX>();
+    monitorinfo->cbSize = sizeof(MONITORINFOEX);
     GetMonitorInfo(hmonitor, monitorinfo.get());
-    monitorCoordinates->push_back(std::make_shared<RECT>(monitorinfo->rcWork));
+    monitorCoordinates->push_back(std::make_shared<RECT>(monitorinfo->rcMonitor));
 	
     return true;
 }

@@ -12,9 +12,10 @@ private:
 	static double calcDrop(const double x, const double k, const double x0);
 	std::shared_ptr<Application_Hook> _applicationHook;
 	std::vector<uint32_t> hotkeys;
-	int hookedAppOffset = -12;
+	long hookedAppOffset = -12;
 	std::shared_ptr<bool> terminator = std::make_shared<bool>(true);
 	static long getHightestPointInFullDesktop();
+	long getHightestPointInCurrentMonitor();
 public:
 	ApplicationPositioner(HWND appHwnd, std::string appName, UINT hotkey, UINT modHotkey);
 	void toggleTerminal();
