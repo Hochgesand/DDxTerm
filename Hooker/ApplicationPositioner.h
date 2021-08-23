@@ -21,7 +21,7 @@ public:
 	void toggleTerminal();
 	void dropTerminal();
 	void hideTerminal();
-	void movAppToPosNoResize(const long x, const long y) const;
+	void moveAppToPosNoResize(const long x, const long y) const;
 	void unfocusApplication() const;
 	std::vector<uint32_t> getSelectedHotkeys() const;
 	std::future<void> hotkeyHandle;
