@@ -35,10 +35,13 @@
     <ClInclude Include="fMainFrame.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="AppManagerObserver.h">
+    <ClInclude Include="IObserver.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="HotkeyDefs.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="AppManagerObserver.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

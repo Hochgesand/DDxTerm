@@ -25,14 +25,14 @@ void ApplicationManager::refreshRunningApps()
     }
 }
 
-// dd steht nicht für DOPPEL D sondern für DropDown
+// dd steht nicht fï¿½r DOPPEL D sondern fï¿½r DropDown
 void ApplicationManager::select_application_for_dd(const HWND appHwnd, unsigned int hotkey, unsigned int modHotkey)
 {
-    for (auto [fst, snd] : *openApplications)
+    for (auto elem : *openApplications)
     {
-        if (fst == appHwnd)
+        if (elem->getHwnd() == appHwnd)
         {        	
-            hookedApplications.push_back(std::make_shared<ApplicationPositioning>(fst, snd, hotkey, modHotkey));
+            hookedApplications.push_back(std::make_shared<ApplicationPositioner>(elem->getHwnd(), elem->getAppName(), hotkey, modHotkey));
             notify();
             break;
         }
@@ -40,13 +40,13 @@ void ApplicationManager::select_application_for_dd(const HWND appHwnd, unsigned 
 }
 
 // Gets apps which are opened in general
-std::shared_ptr<std::map<HWND, std::string>> ApplicationManager::getOpenApps() const
+std::shared_ptr<std::vector<std::shared_ptr<HookedWindow>>> ApplicationManager::getOpenApps() const
 {
     return openApplications;
 }
 
 // Removes a specific Application from hookedApplications. Should only be used by deselectTerm(s)
-void ApplicationManager::eraseSelectedApplication(std::shared_ptr<ApplicationPositioning> element)
+void ApplicationManager::eraseSelectedApplication(std::shared_ptr<ApplicationPositioner> element)
 {
     hookedApplications.erase(
         std::remove(hookedApplications.begin(), hookedApplications.end(), element),
@@ -54,7 +54,7 @@ void ApplicationManager::eraseSelectedApplication(std::shared_ptr<ApplicationPos
     );
 }
 
-// When UNHOOKed search for ApplicationPositioning object and terminate it.
+// When UNHOOKed search for ApplicationPositioner object and terminate it.
 // If its a nullpointer it shall be removed.
 // When Apps close without a UNHOOK its a nullpointer
 void ApplicationManager::deselectTerm(HWND appHwnd)
@@ -94,14 +94,12 @@ void ApplicationManager::deselectTerms()
     notify();
 }
 
-/// <summary>
 /// gets all hooked apps as pointer to ApplicationPositionings
-/// </summary>
-/// <returns>vector of pointer of ApplicationPositionings</returns>
-std::vector<std::shared_ptr<ApplicationPositioning>> ApplicationManager::getHookedApps()
+/// vector of pointer of ApplicationPositionings
+std::vector<std::shared_ptr<ApplicationPositioner>> ApplicationManager::getHookedApps()
 {
     refreshRunningApps();
-	std::vector<std::shared_ptr<ApplicationPositioning>> hookedApps = {};
+	std::vector<std::shared_ptr<ApplicationPositioner>> hookedApps = {};
 	for (auto const& element : hookedApplications)
 	{
         hookedApps.push_back(element);

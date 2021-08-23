@@ -21,10 +21,13 @@
     <ClCompile Include="KeyboardHook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ApplicationPositioning.cpp">
+    <ClCompile Include="ApplicationPositioner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WindowGrabber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ISubject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,10 +41,13 @@
     <ClInclude Include="HookedWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ApplicationPositioning.h">
+    <ClInclude Include="ApplicationPositioner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WindowGrabber.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ISubject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
