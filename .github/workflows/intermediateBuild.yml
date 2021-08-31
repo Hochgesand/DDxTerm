@@ -1,0 +1,30 @@
+name: Build only Application
+on:
+  push:
+    branches-ignore:
+      - master
+      - develop
+
+jobs:
+  BuildDDxTerm:
+    needs: BuildwxWidgetsRelease
+    runs-on: windows-latest
+    steps:
+      - name: Get Artifact for wxWidgets
+        uses: actions/download-artifact@v2
+        with:
+          name: wxWidgetsBuild
+
+      - name: Debug
+        run: |
+          dir
+
+      - name: Set env vars
+        run: |
+          dir
+          [System.Environment]::SetEnvironmentVariable('WXWIN','D:\a\DDxTerm\DDxTerm\wxWidgets',[System.EnvironmentVariableTarget]::Machine)
+
+      - name: BuildDDxTerm
+        run: |
+          dir
+          msbuild DropdownTerminal.sln /m /t:Build /p:Configuration="Release"

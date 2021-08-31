@@ -1,0 +1,60 @@
+name: Build and Test Application and wxWidgets
+on:
+  push:
+    branches:
+      - develop
+      - master
+
+jobs:
+  BuildwxWidgetsRelease:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.3
+
+      - name: SetupWxWidgetsRelease
+        run: |
+          cd wxWidgets\build\msw
+          dir
+          msbuild wx_vc16.sln /m /t:Build /p:Configuration="Release"
+
+      - name: SetupWxWidgetsDLLRelease
+        run: |
+          cd wxWidgets\build\msw
+          dir
+          msbuild wx_vc16.sln /m /t:Build /p:Configuration="DLL Release"
+
+      - name: Upload Artifact wxWidgetsBuild
+        uses: actions/upload-artifact@v2
+        with:
+          name: wxWidgetsBuild
+          path: |
+            ..\DDxTerm\
+          retention-days: 60
+
+  BuildDDxTerm:
+    needs: BuildwxWidgetsRelease
+    runs-on: windows-latest
+    steps:
+      - name: Get Artifact for wxWidgets
+        uses: actions/download-artifact@v2
+        with:
+          name: wxWidgetsBuild
+
+      - name: Debug
+        run: |
+         dir
+
+      - name: Set env vars
+        run: |
+          dir
+          [System.Environment]::SetEnvironmentVariable('WXWIN','D:\a\DDxTerm\DDxTerm\wxWidgets',[System.EnvironmentVariableTarget]::Machine)
+
+      - name: BuildDDxTerm
+        run: |
+          dir
+          msbuild DropdownTerminal.sln /m /t:Build /p:Configuration="Release"

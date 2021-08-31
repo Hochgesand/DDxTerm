@@ -37,15 +37,15 @@ long ApplicationPositioner::getHightestPointInFullDesktop()
 
 long ApplicationPositioner::getHightestPointInCurrentMonitor()
 {
-	long getHighestMonitor = 10000000;
+	long getHighestMonitor = 0;
 	const auto monitorsRelPos = WindowGrabber::getDesktopsRectRelative();
 	_applicationHook->refreshTerminalPosition();
 	for (const auto monitors_rel_po : *monitorsRelPos)
 	{
-		auto appTop = _applicationHook->getApplicationRect()->top;
-		auto monitorBottom = monitors_rel_po->bottom;
-		if (appTop <= monitorBottom && 
-			_applicationHook->getApplicationRect()->left >= monitors_rel_po->left && 
+		if (_applicationHook->getApplicationRect()->top < monitors_rel_po->bottom &&
+			// Adding 10 so that if the app is like 10 pixels above the monitor, it still hooks to the intendet monitor
+			_applicationHook->getApplicationRect()->top + 10 >= monitors_rel_po->top &&
+			_applicationHook->getApplicationRect()->left >= monitors_rel_po->left &&
 			_applicationHook->getApplicationRect()->right <= monitors_rel_po->right)
 		{
 			getHighestMonitor = monitors_rel_po->top;
@@ -72,9 +72,9 @@ void ApplicationPositioner::dropTerminal()
 	// oldPosition is equal to y in the beginning. OldPos is used for (m * x + b) calculation in the start of the while loop.
 	double y = _applicationHook->getApplicationRect()->top;
 	double count = 0.0;
-	const double diff = (-1 * hookedAppOffset + _applicationHook->getApplicationRect()->top) * -1;
+	const double diff = (-1 * hookedAppOffset + _applicationHook->getApplicationRect()->top + 2) * -1;
 
-	while (y < -1 + hookedAppOffset)
+	while (y < -3 + hookedAppOffset)
 	{
 		// Essentially m * x + b where b is the old Position where the animation started and the diff is the way to go to drop the Application and x is count.
 		y = calcDrop(count, 10, 0.5) * diff + oldPositionY;
@@ -101,8 +101,8 @@ void ApplicationPositioner::hideTerminal()
 	long oldPositionY = _applicationHook->getApplicationRect()->top;
 	double y = oldPositionY;
 	double count = 0.0;
-	const long rectHeight = _applicationHook->calcRectHeight() - getHightestPointInFullDesktop();
-	const double diff = rectHeight + oldPositionY;
+	const long rectHeight = _applicationHook->calcRectHeight() - getHightestPointInFullDesktop() + 50;
+	const double diff = rectHeight + oldPositionY + 50;
 
 
 	while (y > rectHeight * -1 + 1)
