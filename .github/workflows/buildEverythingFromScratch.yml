@@ -65,6 +65,12 @@ jobs:
           copy D:\a\DDxTerm\DDxTerm\wxWidgets\lib\vc_dll\wxbase316u_vc_custom.dll D:\a\DDxTerm\DDxTerm\Release
           copy D:\a\DDxTerm\DDxTerm\wxWidgets\lib\vc_dll\wxmsw316u_core_vc_custom.dll D:\a\DDxTerm\DDxTerm\Release
 
+      - name delete unused files in release
+        run: |
+          rm *.exp
+          rm *.lib
+          rm *.pdb
+
       - name: Upload Artifact DDxTerm Build
         uses: actions/upload-artifact@v2
         with:
