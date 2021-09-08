@@ -88,6 +88,6 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
           prerelease: true
-          title: "Development Build"
+          title: "latest"
           files: |
             D:\a\DDxTerm\DDxTerm\Release
