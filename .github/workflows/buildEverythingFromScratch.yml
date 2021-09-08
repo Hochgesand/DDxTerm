@@ -90,4 +90,4 @@ jobs:
           prerelease: true
           title: "latest"
           files: |
-            D:\a\DDxTerm\DDxTerm\Release
+            D:\a\DDxTerm\DDxTerm\Release.zip
