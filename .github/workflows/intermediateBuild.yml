@@ -7,24 +7,34 @@ on:
 
 jobs:
   BuildDDxTerm:
-    needs: BuildwxWidgetsRelease
     runs-on: windows-latest
+    env:
+      WXWIN: D:\a\DDxTerm\DDxTerm\wxWidgets
+
     steps:
+      - uses: actions/checkout@v2
+
       - name: Get Artifact for wxWidgets
-        uses: actions/download-artifact@v2
+        uses: dawidd6/action-download-artifact@v2
         with:
-          name: wxWidgetsBuild
+          workflow: buildEverythingFromScratch.yml
 
-      - name: Debug
-        run: |
-          dir
-
-      - name: Set env vars
-        run: |
-          dir
-          [System.Environment]::SetEnvironmentVariable('WXWIN','D:\a\DDxTerm\DDxTerm\wxWidgets',[System.EnvironmentVariableTarget]::Machine)
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.3
 
       - name: BuildDDxTerm
         run: |
-          dir
           msbuild DropdownTerminal.sln /m /t:Build /p:Configuration="Release"
+
+      - name: Copy DLL to Release folder
+        run: |
+          copy D:\a\DDxTerm\DDxTerm\wxWidgets\lib\vc_dll\wxbase316u_vc_custom.dll D:\a\DDxTerm\DDxTerm\Release
+          copy D:\a\DDxTerm\DDxTerm\wxWidgets\lib\vc_dll\wxmsw316u_core_vc_custom.dll D:\a\DDxTerm\DDxTerm\Release
+
+      - name: Upload Artifact DDxTerm Build
+        uses: actions/upload-artifact@v2
+        with:
+          name: DDxTermRelease
+          path: |
+            D:\a\DDxTerm\DDxTerm\Release
+          retention-days: 60

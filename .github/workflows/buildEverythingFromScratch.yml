@@ -1,9 +1,5 @@
 name: Build and Test Application and wxWidgets
-on:
-  push:
-    branches:
-      - develop
-      - master
+on: [push]
 
 jobs:
   BuildwxWidgetsRelease:
@@ -16,45 +12,82 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.3
 
-      - name: SetupWxWidgetsRelease
-        run: |
-          cd wxWidgets\build\msw
-          dir
-          msbuild wx_vc16.sln /m /t:Build /p:Configuration="Release"
-
       - name: SetupWxWidgetsDLLRelease
         run: |
           cd wxWidgets\build\msw
-          dir
           msbuild wx_vc16.sln /m /t:Build /p:Configuration="DLL Release"
+
+      - name: SetupWxWidgetsRelease
+        run: |
+          cd wxWidgets\build\msw
+          msbuild wx_vc16.sln /m /t:Build /p:Configuration="Release"
+
 
       - name: Upload Artifact wxWidgetsBuild
         uses: actions/upload-artifact@v2
         with:
-          name: wxWidgetsBuild
+          name: wxWidgets
           path: |
-            ..\DDxTerm\
-          retention-days: 60
+            D:\a\DDxTerm\DDxTerm\wxWidgets\lib\
+            D:\a\DDxTerm\DDxTerm\wxWidgets\include\
+          retention-days: 30
 
   BuildDDxTerm:
     needs: BuildwxWidgetsRelease
     runs-on: windows-latest
+    env:
+      WXWIN: D:\a\DDxTerm\DDxTerm\wxWidgets
+
     steps:
+      - uses: actions/checkout@v2
+
       - name: Get Artifact for wxWidgets
         uses: actions/download-artifact@v2
         with:
-          name: wxWidgetsBuild
+          name: wxWidgets
 
-      - name: Debug
-        run: |
-         dir
-
-      - name: Set env vars
+      - name: Moving lib and include INTO wxWidgets
         run: |
           dir
-          [System.Environment]::SetEnvironmentVariable('WXWIN','D:\a\DDxTerm\DDxTerm\wxWidgets',[System.EnvironmentVariableTarget]::Machine)
+          mv .\lib\ .\wxWidgets\ -ErrorAction SilentlyContinue
+          mv .\include\ .\wxWidgets\ -ErrorAction SilentlyContinue
+          dir
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.3
 
       - name: BuildDDxTerm
         run: |
-          dir
           msbuild DropdownTerminal.sln /m /t:Build /p:Configuration="Release"
+
+      - name: Copy DLL to Release folder
+        run: |
+          copy D:\a\DDxTerm\DDxTerm\wxWidgets\lib\vc_dll\wxbase316u_vc_custom.dll D:\a\DDxTerm\DDxTerm\Release
+          copy D:\a\DDxTerm\DDxTerm\wxWidgets\lib\vc_dll\wxmsw316u_core_vc_custom.dll D:\a\DDxTerm\DDxTerm\Release
+
+      - name delete unused files in release
+        run: |
+          rm *.exp
+          rm *.lib
+          rm *.pdb
+
+      - name zipRelease
+        run: |
+          Compress-Archive -Path D:\a\DDxTerm\DDxTerm\Release -DestinationPath D:\a\DDxTerm\DDxTerm\Release.zip
+
+      - name: Upload Artifact DDxTerm Build
+        uses: actions/upload-artifact@v2
+        with:
+          name: DDxTermRelease
+          path: |
+            D:\a\DDxTerm\DDxTerm\Release.zip
+          retention-days: 60
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            D:\a\DDxTerm\DDxTerm\Release
